@@ -4,9 +4,6 @@ package body Drivers.Ethernet is
       Server_Address : GNAT.Sockets.Sock_Addr_Type;
    begin
 
-      -- initialize the GNAT.Sockets package
-      GNAT.Sockets.Initialize (Process_Blocking_IO => False);
-
       -- set the server address
       Server_Address :=
         GNAT.Sockets.Sock_Addr_Type'
@@ -36,8 +33,8 @@ package body Drivers.Ethernet is
    end Initialize;
 
    procedure Send
-     (This :     Ethernet; Address : out Address_V4_Access_Type;
-      Port : out Port_Type; Data : out Ada.Streams.Stream_Element_Array;
+     (This :     Ethernet; Address : Address_V4_Type; Port : Port_Type;
+      Data :     Ada.Streams.Stream_Element_Array;
       Last : out Ada.Streams.Stream_Element_Offset)
    is
       Destination_Address : GNAT.Sockets.Sock_Addr_Type;
@@ -64,8 +61,8 @@ package body Drivers.Ethernet is
    end Send;
 
    procedure Receive
-     (This :     Ethernet; Address : out Address_V4_Access_Type;
-      Port : out Port_Type; Data : out Ada.Streams.Stream_Element_Array;
+     (This :     Ethernet; Address : out Address_V4_Type; Port : out Port_Type;
+      Data : out Ada.Streams.Stream_Element_Array;
       Last : out Ada.Streams.Stream_Element_Offset)
    is
       Source_Address : GNAT.Sockets.Sock_Addr_Type;
@@ -76,7 +73,7 @@ package body Drivers.Ethernet is
 
       -- set the source address
       Address :=
-        new Address_V4_Type'
+        Address_V4_Type'
           (1 => Address_Octet_Type (Source_Address.Addr.Sin_V4 (1)),
            2 => Address_Octet_Type (Source_Address.Addr.Sin_V4 (2)),
            3 => Address_Octet_Type (Source_Address.Addr.Sin_V4 (3)),
@@ -96,7 +93,7 @@ package body Drivers.Ethernet is
       use type GNAT.Sockets.Selector_Status;
    begin
 
-      GNAT.Sockets.Set (W_Socket_Set, This.Socket);
+      GNAT.Sockets.Set (R_Socket_Set, This.Socket);
 
       -- check the selector
       GNAT.Sockets.Check_Selector

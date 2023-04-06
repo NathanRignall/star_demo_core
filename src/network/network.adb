@@ -14,27 +14,45 @@ package body Network is
 
       -- connect some dummy devices
 
-      Connected_Device_Cloud_Array (1) := (Identifier => 1, Active => True);
+      Connected_Device_Radio_Array (0) := (Identifier => 200, Active => True);
+      Device_Address_Radio_Array (0)   :=
+        Device_Address_Type'
+          (Identifier => 200,
+           Address    => Drivers.Ethernet.Address_V4_Type'(127, 0, 0, 1));
 
    end Initialize;
 
    procedure Receive_Packet (Packet : out Packet_Type);
    procedure Process_Packet (Packet : Packet_Type);
+   procedure Send_Packet (Packet : Packet_Type);
+   procedure Send_Packet_Alive;
 
    procedure Schedule is
       Packet : Packet_Type;
+
+      Test_Packet : Packet_Type :=
+        Packet_Type'
+          (Packet_Variant => Command, Packet_Number => 0, Broadcast => False,
+           Source => Device_Identifier, Target => 200, Payload_Length => 0,
+           Payload        => Payload_Array_Default);
+
    begin
 
-      Ada.Text_IO.Put_Line("Test");
+      Send_Packet_Alive;
 
       -- check if there is a new packet
       if Hardware.Ethernet.Is_New_Data then
 
-         Ada.Text_IO.Put_Line("New Data");
+         -- get the packet
+         Receive_Packet (Packet);
 
-        Process_Packet (Packet);
+         -- process the packet
+         Process_Packet (Packet);
 
       end if;
+
+      -- send a dummy packet
+      Send_Packet (Test_Packet);
 
       -- get all the new packets
 
@@ -51,7 +69,7 @@ package body Network is
    end Schedule;
 
    procedure Receive_Packet (Packet : out Packet_Type) is
-      Source_Address : Drivers.Ethernet.Address_V4_Access_Type;
+      Source_Address : Drivers.Ethernet.Address_V4_Type;
       Source_Port    : Drivers.Ethernet.Port_Type;
       Data : Ada.Streams.Stream_Element_Array (1 .. 1_024) := (others => 0);
       Last           : Ada.Streams.Stream_Element_Offset;
@@ -103,15 +121,13 @@ package body Network is
    function Is_Connected_Direct
      (Device_Identifier : Device_Identifier_Type) return Boolean
    is
-      Connected_Device : Connected_Device_Type;
    begin
 
       for Device_Index in Connected_Device_Index_Type loop
 
-         Connected_Device := Connected_Device_Radio_Array (Device_Index);
-
-         if Connected_Device.Active
-           and then Connected_Device.Identifier = Device_Identifier
+         if Connected_Device_Radio_Array (Device_Index).Active
+           and then Connected_Device_Radio_Array (Device_Index).Identifier =
+             Device_Identifier
          then
 
             return True;
@@ -124,30 +140,82 @@ package body Network is
 
    end Is_Connected_Direct;
 
-   procedure Send_Packet (Packet : Packet_Type) is
+   procedure Lookup_Address
+     (Device_Identifier    :     Device_Identifier_Type;
+      Device_Address_Array :     Device_Address_Array_Type;
+      Device_Address       : out Drivers.Ethernet.Address_V4_Type)
+   is
    begin
 
-      if Is_Connected_Direct (Packet.Target) then
+      -- loop through the array and find the address
+      for Device_Address_Index in Device_Address_Index_Type loop
 
-         -- lookup the port and ip of target
+         if Device_Address_Array (Device_Address_Index).Identifier =
+           Device_Identifier
+         then
 
-         null;
+            Device_Address :=
+              Device_Address_Array (Device_Address_Index).Address;
+
+            return;
+
+         end if;
+
+      end loop;
+
+   end Lookup_Address;
+
+   procedure Send_Packet (Packet : Packet_Type) is
+      Destination_Address    : Drivers.Ethernet.Address_V4_Type;
+      Destination_Port_Radio : Drivers.Ethernet.Port_Type := 5_001;
+      Destination_Port_Cloud : Drivers.Ethernet.Port_Type := 5_002;
+
+      Last     : Ada.Streams.Stream_Element_Offset;
+      New_Data : Ada.Streams.Stream_Element_Array (1 .. 512);
+      for New_Data'Address use Packet'Address;
+   begin
+
+      -- check if a broadcast
+      if not Packet.Broadcast then
+
+         -- check if the intended destination is direct
+         if Is_Connected_Direct (Packet.Target) then
+
+            -- lookup the ip
+            Lookup_Address
+              (Packet.Target, Device_Address_Radio_Array, Destination_Address);
+
+            -- send the packet
+            Hardware.Ethernet.Send
+              (Address => Destination_Address, Port => Destination_Port_Radio,
+               Data    => New_Data, Last => Last);
+
+         else
+
+            -- lookup the ip
+            Lookup_Address
+              (Packet.Target, Device_Address_Cloud_Array, Destination_Address);
+
+            -- send the packet
+            Hardware.Ethernet.Send
+              (Address => Destination_Address, Port => Destination_Port_Cloud,
+               Data    => New_Data, Last => Last);
+
+         end if;
+
+      else
+
+         -- send the packet
+         Hardware.Ethernet.Send
+           (Address => Hardware.Ethernet.Broadcast_Address.all,
+            Port    => Destination_Port_Cloud, Data => New_Data, Last => Last);
 
       end if;
-
-      -- Check if destination is direct link
-      -- if so, send packet to destination
-      -- if not, send to server
-
-      null;
 
    end Send_Packet;
 
    procedure Send_Packet_Alive is
       Packet_Alive : Packet_Type;
-
-      Test_Address : Drivers.Ethernet.Address_V4_Access_Type :=
-        new Drivers.Ethernet.Address_V4_Type'(10, 16, 0, 60);
    begin
 
       Packet_Alive :=

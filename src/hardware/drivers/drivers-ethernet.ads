@@ -20,29 +20,35 @@ package Drivers.Ethernet is
    type Port_Type is range 1 .. 65_535;
    Port_Default : constant Port_Type := Port_Type'Last;
 
-   type Ethernet (Address : Address_V4_Access_Type; Port : Port_Type) is
+   type Ethernet
+     (Address            : Address_V4_Access_Type; Port : Port_Type;
+      Broadcast_Address : Address_V4_Access_Type)
+   is
      tagged private;
 
    procedure Initialize (This : in out Ethernet);
 
    procedure Send
-     (This :     Ethernet; Address : out Address_V4_Access_Type;
-      Port : out Port_Type; Data : out Ada.Streams.Stream_Element_Array;
+     (This :     Ethernet; Address : Address_V4_Type; Port : Port_Type;
+      Data :     Ada.Streams.Stream_Element_Array;
       Last : out Ada.Streams.Stream_Element_Offset);
 
    procedure Receive
-     (This :     Ethernet; Address : out Address_V4_Access_Type;
-      Port : out Port_Type; Data : out Ada.Streams.Stream_Element_Array;
+     (This :     Ethernet; Address : out Address_V4_Type; Port : out Port_Type;
+      Data : out Ada.Streams.Stream_Element_Array;
       Last : out Ada.Streams.Stream_Element_Offset);
 
    function Is_New_Data (This : Ethernet) return Boolean;
 
 private
 
-   type Ethernet (Address : Address_V4_Access_Type; Port : Port_Type) is
+   type Ethernet
+     (Address            : Address_V4_Access_Type; Port : Port_Type;
+      Broadcast_Address : Address_V4_Access_Type)
+   is
    tagged limited record
 
-      Socket : GNAT.Sockets.Socket_Type;
+      Socket   : GNAT.Sockets.Socket_Type;
       Selector : GNAT.Sockets.Selector_Type;
 
    end record;
