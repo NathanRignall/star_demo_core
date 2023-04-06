@@ -1,0 +1,50 @@
+with Ada.Streams;
+with GNAT.Sockets;
+
+package Drivers.Ethernet is
+
+   type Address_Octet_Type is range 0 .. 255;
+   Address_Octet_Default : constant Address_Octet_Type := 0;
+
+   type Address_V0_Type is array (Natural range <>) of Address_Octet_Type;
+
+   type Address_V4_Type is new Address_V0_Type (1 .. 4);
+   Address_V4_Default : constant Address_V4_Type := (others => 0);
+
+   type Address_V6_Type is new Address_V0_Type (1 .. 16);
+   Address_V6_Default : constant Address_V6_Type := (others => 0);
+
+   type Address_V4_Access_Type is access Address_V4_Type;
+   type Address_V6_Access_Type is access Address_V6_Type;
+
+   type Port_Type is range 1 .. 65_535;
+   Port_Default : constant Port_Type := Port_Type'Last;
+
+   type Ethernet (Address : Address_V4_Access_Type; Port : Port_Type) is
+     tagged private;
+
+   procedure Initialize (This : in out Ethernet);
+
+   procedure Send
+     (This :     Ethernet; Address : out Address_V4_Access_Type;
+      Port : out Port_Type; Data : out Ada.Streams.Stream_Element_Array;
+      Last : out Ada.Streams.Stream_Element_Offset);
+
+   procedure Receive
+     (This :     Ethernet; Address : out Address_V4_Access_Type;
+      Port : out Port_Type; Data : out Ada.Streams.Stream_Element_Array;
+      Last : out Ada.Streams.Stream_Element_Offset);
+
+   function Is_New_Data (This : Ethernet) return Boolean;
+
+private
+
+   type Ethernet (Address : Address_V4_Access_Type; Port : Port_Type) is
+   tagged limited record
+
+      Socket : GNAT.Sockets.Socket_Type;
+      Selector : GNAT.Sockets.Selector_Type;
+
+   end record;
+
+end Drivers.Ethernet;

@@ -1,0 +1,17 @@
+name = "star_demo_core"
+description = "Shiny new project"
+version = "0.1.0-dev"
+
+authors = ["Nathan Rignall"]
+maintainers = ["Nathan Rignall <rignallnathan@gmail.com>"]
+maintainers-logins = ["NathanRignall"]
+
+executables = ["star_demo_core"]
+
+[[depends-on]]
+star_comms = "0.1.0"
+
+[[pins]]
+star_comms = { path='../star_comms' }
+[[depends-on]]
+dotenv = "^1.0.0"
