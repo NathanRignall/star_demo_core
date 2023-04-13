@@ -1,18 +1,23 @@
 with Ada.Real_Time;
 with Interfaces;
+
 with Drivers.Ethernet;
 
+with Types.Schedule;
+
 package Network is
+
+   type Transport_Type is (Radio, Cloud);
 
    type Device_Identifier_Type is mod 2**16;
    for Device_Identifier_Type'Size use 16;
    Device_Identifier_Default : constant Device_Identifier_Type := 0;
 
-   Device_Identifier : Device_Identifier_Type := 10;
+   Device_Identifier : Device_Identifier_Type := Device_Identifier_Default;
 
    -- Stores mapping of devices identifiers to their IP addresses
 
-   type Device_Address_Index_Type is range 1 .. 10;
+   type Device_Address_Index_Type is range 1 .. 100;
    Device_Address_Index_Default : constant Device_Address_Index_Type := 1;
 
    type Device_Address_Type is record
@@ -29,15 +34,19 @@ package Network is
    Device_Address_Array_Default : constant Device_Address_Array_Type :=
      Device_Address_Array_Type'(others => Device_Address_Default);
 
-   Device_Address_Radio_Array : Device_Address_Array_Type :=
-     Device_Address_Array_Default;
+   type Device_Address_Transport_Array_Type is
+     array (Transport_Type) of Device_Address_Array_Type;
+   Device_Address_Transport_Array_Default :
+     constant Device_Address_Transport_Array_Type :=
+     Device_Address_Transport_Array_Type'
+       (others => Device_Address_Array_Default);
 
-   Device_Address_Cloud_Array : Device_Address_Array_Type :=
-     Device_Address_Array_Default;
+   Device_Address_Transport_Array : Device_Address_Transport_Array_Type :=
+     Device_Address_Transport_Array_Default;
 
    -- Store the list of devices currently connected to the network
 
-   type Connected_Device_Index_Type is range 1 .. 10;
+   type Connected_Device_Index_Type is range 1 .. 50;
    Connected_Device_Index_Default : constant Connected_Device_Index_Type := 1;
 
    type Connected_Device_Type is record
@@ -55,11 +64,18 @@ package Network is
    Connected_Device_Array_Default : constant Connected_Device_Array_Type :=
      Connected_Device_Array_Type'(others => Connected_Device_Default);
 
-   Connected_Device_Radio_Array : Connected_Device_Array_Type :=
-     Connected_Device_Array_Default;
+   type Connected_Device_Transport_Array_Type is
+     array (Transport_Type) of Connected_Device_Array_Type;
+   Connected_Device_Transport_Array_Default :
+     constant Connected_Device_Transport_Array_Type :=
+     Connected_Device_Transport_Array_Type'
+       (others => Connected_Device_Array_Default);
 
-   Connected_Device_Cloud_Array : Connected_Device_Array_Type :=
-     Connected_Device_Array_Default;
+   Connected_Device_Transport_Array : Connected_Device_Transport_Array_Type :=
+     Connected_Device_Transport_Array_Default;
+
+   Device_Timeout : constant Ada.Real_Time.Time_Span :=
+     Ada.Real_Time.Seconds (5);
 
    -- Define how packets are structured
 
@@ -125,6 +141,6 @@ package Network is
 
    procedure Initialize;
 
-   procedure Schedule;
+   procedure Schedule (Cycle : Types.Schedule.Cycle_Type);
 
 end Network;

@@ -27,8 +27,6 @@ package body Drivers.Ethernet is
                          (This.Address.all (4)))),
            Port   => GNAT.Sockets.Port_Type (This.Port));
 
-      Server_Address.Addr := GNAT.Sockets.Any_Inet_Addr;
-
       -- set the multicast address
       Multicast_Address :=
         GNAT.Sockets.Inet_Addr_Type'

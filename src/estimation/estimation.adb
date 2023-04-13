@@ -2,7 +2,7 @@ with Ada.Text_IO;
 
 package body Estimation is
 
-    procedure Schedule is
+    procedure Schedule (Cycle : Types.Schedule.Cycle_Type) is
     begin
 
         null;
