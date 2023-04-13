@@ -1,4 +1,13 @@
-package body Control is
+with Application.Network;
+
+package body Application.Control is
+
+   procedure Initialize is
+   begin
+
+      null;
+
+   end Initialize;
 
    procedure Schedule (Cycle : Types.Schedule.Cycle_Type) is
    begin
@@ -10,4 +19,4 @@ package body Control is
 
    end Schedule;
 
-end Control;
+end Application.Control;

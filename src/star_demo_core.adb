@@ -2,12 +2,8 @@ with Ada.Exceptions;
 with Ada.Real_Time;
 with Ada.Text_IO;
 
-with Config;
-with Control;
-with Estimation;
 with Hardware;
-with Network;
-with State;
+with Application;
 
 with Types.Schedule;
 
@@ -20,9 +16,7 @@ procedure Star_Demo_Core is
    procedure Dispatch_Schedule (Cycle : Types.Schedule.Cycle_Type) is
    begin
 
-      Estimation.Schedule (Cycle);
-      Control.Schedule (Cycle);
-      Network.Schedule (Cycle);
+      Application.Schedule (Cycle);
 
    end Dispatch_Schedule;
 
@@ -41,9 +35,8 @@ procedure Star_Demo_Core is
 
       Ada.Text_IO.Put_Line ("Starting Schedule");
 
-      Config.Initialize;
       Hardware.Initialize;
-      Network.Initialize;
+      Application.Initialize;
 
       loop
          delay until Next;

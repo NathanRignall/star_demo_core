@@ -1,9 +1,10 @@
+with Ada.Environment_Variables;
 with Ada.Streams;
 with Ada.Text_IO;
 
 with Hardware;
 
-package body Network is
+package body Application.Network is
 
    procedure Recieve_Process_Packets;
 
@@ -19,11 +20,7 @@ package body Network is
      (Transport           : Transport_Type; Packet : Packet_Type;
       Source_Address_Port : Drivers.Ethernet.Address_Port_Type);
 
-   procedure Send_Packet (Packet : Packet_Type);
-
    procedure Send_Packet_Alive;
-
-   procedure Send_Telemetry;
 
    procedure Cleanup_Connected_Device_Array;
 
@@ -36,9 +33,13 @@ package body Network is
       return Boolean;
 
    procedure Initialize is
+      Device_Identifier_Env : constant String :=
+        Ada.Environment_Variables.Value ("DEVICE_IDENTIFIER");
    begin
 
       Ada.Text_IO.Put_Line ("Network Initialize");
+
+      Device_Identifier := Device_Identifier_Type'Value (Device_Identifier_Env);
 
       Ada.Text_IO.Put_Line ("Device Id" & Device_Identifier'Image);
 
@@ -52,15 +53,12 @@ package body Network is
          when Types.Schedule.S_20ms =>
             Recieve_Process_Packets;
 
-         when Types.Schedule.S_100ms =>
-            Send_Telemetry;
-
          when Types.Schedule.S_500ms =>
             Cleanup_Connected_Device_Array;
 
          when Types.Schedule.S_2000ms =>
             Send_Packet_Alive;
-            
+
          when others =>
             null;
 
@@ -324,7 +322,7 @@ package body Network is
       Destination_Address : Drivers.Ethernet.Address_V4_Type := (127, 0, 0, 1);
 
       Last     : Ada.Streams.Stream_Element_Offset;
-      New_Data : Ada.Streams.Stream_Element_Array (1 .. 263);
+      New_Data : Ada.Streams.Stream_Element_Array (1 .. 1024);
       for New_Data'Address use Packet'Address;
    begin
 
@@ -388,15 +386,18 @@ package body Network is
 
    end Send_Packet_Alive;
 
-   procedure Send_Telemetry is
+   procedure Send_Telemetry
+     (Payload_Length : Payload_Index_Type; Payload : Payload_Array_Type)
+   is
       Packet_Telemetry : Packet_Type;
    begin
 
       Packet_Telemetry :=
         Packet_Type'
           (Packet_Variant => Telemetry, Packet_Number => 0,
-           Source => Device_Identifier, Target => 0, Payload_Length => 0,
-           Payload        => Payload_Array_Default, Broadcast => False);
+           Source         => Device_Identifier, Target => 0,
+           Payload_Length => Payload_Length, Payload => Payload,
+           Broadcast      => False);
 
       -- telemetry needs to sent to all connected devices on the radio
 
@@ -404,8 +405,7 @@ package body Network is
       for Device_Index in Connected_Device_Index_Type loop
 
          -- check if the device is active
-         if Connected_Device_Transport_Array (Radio) (Device_Index).Active
-         then
+         if Connected_Device_Transport_Array (Radio) (Device_Index).Active then
 
             -- set the target
             Packet_Telemetry.Target :=
@@ -419,12 +419,11 @@ package body Network is
 
       end loop;
 
-
    end Send_Telemetry;
 
    procedure Cleanup_Connected_Device_Array is
-      Current_Time   : Ada.Real_Time.Time;
-      Timeout_Time   : Ada.Real_Time.Time;
+      Current_Time : Ada.Real_Time.Time;
+      Timeout_Time : Ada.Real_Time.Time;
 
       use type Ada.Real_Time.Time;
    begin
@@ -568,4 +567,4 @@ package body Network is
 
    end Is_Connected;
 
-end Network;
+end Application.Network;

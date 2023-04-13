@@ -1,7 +1,9 @@
 with Types.Schedule;
 
-package Control is
+package Application.Control is
+
+   procedure Initialize;
 
    procedure Schedule (Cycle : Types.Schedule.Cycle_Type);
 
-end Control;
+end Application.Control;

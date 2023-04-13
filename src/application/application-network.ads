@@ -5,7 +5,7 @@ with Drivers.Ethernet;
 
 with Types.Schedule;
 
-package Network is
+package Application.Network is
 
    type Transport_Type is (Radio, Cloud);
 
@@ -98,13 +98,13 @@ package Network is
    for Packet_Number_Type'Size use 8;
    Packet_Number_Default : constant Packet_Number_Type := 0;
 
-   type Payload_Index_Type is mod 2**8;
-   for Payload_Index_Type'Size use 8;
+   type Payload_Index_Type is mod 2**10;
+   for Payload_Index_Type'Size use 10;
    Payload_Index_Default : constant Payload_Index_Type := 0;
 
    type Payload_Array_Type is
      array (Payload_Index_Type) of Interfaces.Unsigned_8;
-   for Payload_Array_Type'Size use 2_048;
+   for Payload_Array_Type'Size use 8192;
    Payload_Array_Default : constant Payload_Array_Type :=
      Payload_Array_Type'(others => 0);
 
@@ -126,10 +126,10 @@ package Network is
       Broadcast      at 0 * 16 range 12 ..    12;
       Source         at 0 * 16 range 13 ..    28;
       Target         at 0 * 16 range 29 ..    44;
-      Payload_Length at 0 * 16 range 45 ..    52;
-      Payload        at 0 * 16 range 53 .. 2_103;
+      Payload_Length at 0 * 16 range 45 ..    55;
+      Payload        at 0 * 16 range 56 .. 8_247;
    end record;
-   for Packet_Type'Size use 2_104;
+   for Packet_Type'Size use 8_248;
    Packet_Default : constant Packet_Type :=
      Packet_Type'
        (Packet_Variant => Packet_Variant_Default,
@@ -143,13 +143,10 @@ package Network is
    for Packet_Index_Type'Size use 8;
    Packet_Index_Default : constant Packet_Index_Type := 0;
 
-   type Packet_Array_Type is array (Packet_Index_Type) of Packet_Type;
-   for Packet_Array_Type'Size use 538_624;
-   Packet_Array_Default : constant Packet_Array_Type :=
-     Packet_Array_Type'(others => Packet_Default);
-
    procedure Initialize;
 
    procedure Schedule (Cycle : Types.Schedule.Cycle_Type);
 
-end Network;
+   procedure Send_Packet (Packet : Packet_Type);
+
+end Application.Network;
