@@ -8,17 +8,10 @@ services:
       dockerfile: ./Dockerfile
     environment:
       - DEVICE_IDENTIFIER=11
-      - RADIO_ADDRESS=172.000.001.011
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
-      - CLOUD_ADDRESS=010.000.001.011
       - CLOUD_MULTICAST_ADDRESS=239.255.128.128
     networks:
-      radio:
-        ipv4_address: 172.0.1.11
-        priority: 1000
-      cloud:
-        ipv4_address: 10.0.1.11
-        priority: 900
+      - system
   drone2:
     image: stardemocore:dev
     build:
@@ -26,17 +19,10 @@ services:
       dockerfile: ./Dockerfile
     environment:
       - DEVICE_IDENTIFIER=12
-      - RADIO_ADDRESS=172.000.001.012
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
-      - CLOUD_ADDRESS=010.000.001.012
       - CLOUD_MULTICAST_ADDRESS=239.255.128.128
     networks:
-      radio:
-        ipv4_address: 172.0.1.12
-        priority: 1000
-      cloud:
-        ipv4_address: 10.0.1.12
-        priority: 900
+      - system
   drone3:
     image: stardemocore:dev
     build:
@@ -44,17 +30,10 @@ services:
       dockerfile: ./Dockerfile
     environment:
       - DEVICE_IDENTIFIER=13
-      - RADIO_ADDRESS=172.000.001.013
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
-      - CLOUD_ADDRESS=010.000.001.013
       - CLOUD_MULTICAST_ADDRESS=239.255.128.128
     networks:
-      radio:
-        ipv4_address: 172.0.1.13
-        priority: 1000
-      cloud:
-        ipv4_address: 10.0.1.13
-        priority: 900
+      - system
   drone4:
     image: stardemocore:dev
     build:
@@ -62,17 +41,10 @@ services:
       dockerfile: ./Dockerfile
     environment:
       - DEVICE_IDENTIFIER=14
-      - RADIO_ADDRESS=172.000.001.014
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
-      - CLOUD_ADDRESS=010.000.001.014
       - CLOUD_MULTICAST_ADDRESS=239.255.128.128
     networks:
-      radio:
-        ipv4_address: 172.0.1.14
-        priority: 1000
-      cloud:
-        ipv4_address: 10.0.1.14
-        priority: 900
+      - system
   drone5:
     image: stardemocore:dev
     build:
@@ -80,17 +52,65 @@ services:
       dockerfile: ./Dockerfile
     environment:
       - DEVICE_IDENTIFIER=15
-      - RADIO_ADDRESS=172.000.001.015
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
-      - CLOUD_ADDRESS=010.000.001.015
       - CLOUD_MULTICAST_ADDRESS=239.255.128.128
     networks:
-      radio:
-        ipv4_address: 172.0.1.15
-        priority: 1000
-      cloud:
-        ipv4_address: 10.0.1.15
-        priority: 900
+      - system
+  drone6:
+    image: stardemocore:dev
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    environment:
+      - DEVICE_IDENTIFIER=16
+      - RADIO_MULTICAST_ADDRESS=239.255.128.127
+      - CLOUD_MULTICAST_ADDRESS=239.255.128.128
+    networks:
+      - system
+  drone7:
+    image: stardemocore:dev
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    environment:
+      - DEVICE_IDENTIFIER=17
+      - RADIO_MULTICAST_ADDRESS=239.255.128.127
+      - CLOUD_MULTICAST_ADDRESS=239.255.128.128
+    networks:
+      - system
+  drone8:
+    image: stardemocore:dev
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    environment:
+      - DEVICE_IDENTIFIER=18
+      - RADIO_MULTICAST_ADDRESS=239.255.128.127
+      - CLOUD_MULTICAST_ADDRESS=239.255.128.128
+    networks:
+      - system
+  drone9:
+    image: stardemocore:dev
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    environment:
+      - DEVICE_IDENTIFIER=19
+      - RADIO_MULTICAST_ADDRESS=239.255.128.127
+      - CLOUD_MULTICAST_ADDRESS=239.255.128.128
+    networks:
+      - system
+  drone10:
+    image: stardemocore:dev
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    environment:
+      - DEVICE_IDENTIFIER=20
+      - RADIO_MULTICAST_ADDRESS=239.255.128.127
+      - CLOUD_MULTICAST_ADDRESS=239.255.128.128
+    networks:
+      - system
 
   # wireshark:
   #   image: lscr.io/linuxserver/wireshark:latest
@@ -100,8 +120,7 @@ services:
   #   security_opt:
   #     - seccomp:unconfined
   #   networks:
-  #     - radio
-  #     - cloud
+  #     - system
   #   environment:
   #     - PUID=1000
   #     - PGID=1000
@@ -111,14 +130,5 @@ services:
   #   restart: unless-stopped
 
 networks:
-  radio:
+  system:
     driver: bridge
-    ipam:
-     config:
-       - subnet: 172.0.1.0/24
-  cloud:
-    driver: bridge
-    ipam:
-     config:
-       - subnet: 10.0.1.0/24
-         gateway: 10.0.1.1
