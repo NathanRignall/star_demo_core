@@ -23,6 +23,8 @@ package body Network is
 
    procedure Send_Packet_Alive;
 
+   procedure Send_Telemetry;
+
    procedure Cleanup_Connected_Device_Array;
 
    procedure Lookup_Address
@@ -49,6 +51,9 @@ package body Network is
 
          when Types.Schedule.S_20ms =>
             Recieve_Process_Packets;
+
+         when Types.Schedule.S_100ms =>
+            Send_Telemetry;
 
          when Types.Schedule.S_500ms =>
             Cleanup_Connected_Device_Array;
@@ -152,7 +157,7 @@ package body Network is
                Process_Alive_Packet (Transport, Packet, Source_Address_Port);
 
             when Telemetry =>
-               Ada.Text_IO.Put_Line ("Data" & Packet.Source'Image);
+               Ada.Text_IO.Put_Line ("Telemetry" & Packet.Source'Image);
 
             when Command =>
                Ada.Text_IO.Put_Line ("Request" & Packet.Source'Image);
@@ -382,6 +387,40 @@ package body Network is
       Send_Packet (Packet_Alive);
 
    end Send_Packet_Alive;
+
+   procedure Send_Telemetry is
+      Packet_Telemetry : Packet_Type;
+   begin
+
+      Packet_Telemetry :=
+        Packet_Type'
+          (Packet_Variant => Telemetry, Packet_Number => 0,
+           Source => Device_Identifier, Target => 0, Payload_Length => 0,
+           Payload        => Payload_Array_Default, Broadcast => False);
+
+      -- telemetry needs to sent to all connected devices on the radio
+
+      -- loop through the connected device array
+      for Device_Index in Connected_Device_Index_Type loop
+
+         -- check if the device is active
+         if Connected_Device_Transport_Array (Radio) (Device_Index).Active
+         then
+
+            -- set the target
+            Packet_Telemetry.Target :=
+              Connected_Device_Transport_Array (Radio) (Device_Index)
+                .Identifier;
+
+            -- send the packet
+            Send_Packet (Packet_Telemetry);
+
+         end if;
+
+      end loop;
+
+
+   end Send_Telemetry;
 
    procedure Cleanup_Connected_Device_Array is
       Current_Time   : Ada.Real_Time.Time;

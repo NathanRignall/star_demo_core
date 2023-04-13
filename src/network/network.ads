@@ -15,6 +15,15 @@ package Network is
 
    Device_Identifier : Device_Identifier_Type := Device_Identifier_Default;
 
+   type Device_Identifier_Index_Type is range 1 .. 100;
+   Device_Identifier_Index_Default : constant Device_Identifier_Index_Type :=
+     1;
+
+   type Device_Identifier_Array_Type is
+     array (Device_Identifier_Index_Type) of Device_Identifier_Type;
+   Device_Identifier_Array_Default : constant Device_Identifier_Array_Type :=
+     Device_Identifier_Array_Type'(others => Device_Identifier_Default);
+
    -- Stores mapping of devices identifiers to their IP addresses
 
    type Device_Address_Index_Type is range 1 .. 100;
