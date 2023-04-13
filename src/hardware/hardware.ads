@@ -3,15 +3,21 @@ with Drivers.Radio;
 
 package Hardware is
 
-   Local_Address      : Drivers.Ethernet.Address_V4_Access_Type :=
-     new Drivers.Ethernet.Address_V4_Type'(127, 0, 0, 1);
-   Broadcast_Adddress : Drivers.Ethernet.Address_V4_Access_Type :=
-     new Drivers.Ethernet.Address_V4_Type'(127, 0, 0, 2);
+   Radio_Address           : Drivers.Ethernet.Address_V4_Access_Type :=
+     new Drivers.Ethernet.Address_V4_Type'(0, 0, 0, 0);
+   Radio_Multicast_Address : Drivers.Ethernet.Address_V4_Access_Type :=
+     new Drivers.Ethernet.Address_V4_Type'(255, 255, 255, 255);
 
-   Ethernet :
-     Drivers.Ethernet.Ethernet (Local_Address, 3_000, Broadcast_Adddress);
-   Radio    :
-     Drivers.Ethernet.Ethernet (Local_Address, 3_001, Broadcast_Adddress);
+   Cloud_Address           : Drivers.Ethernet.Address_V4_Access_Type :=
+     new Drivers.Ethernet.Address_V4_Type'(0, 0, 0, 0);
+   Cloud_Multicast_Address : Drivers.Ethernet.Address_V4_Access_Type :=
+     new Drivers.Ethernet.Address_V4_Type'(255, 255, 255, 255);
+
+   Radio :
+     Drivers.Ethernet.Ethernet (Radio_Address, 3_000, Radio_Multicast_Address);
+
+   Cloud :
+     Drivers.Ethernet.Ethernet (Cloud_Address, 4_000, Cloud_Multicast_Address);
 
    procedure Initialize;
 

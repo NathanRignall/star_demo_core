@@ -7,48 +7,90 @@ services:
       context: ./
       dockerfile: ./Dockerfile
     environment:
-      - DEVICE_IDENTIFIER=10
-      - CLOUD_ADDRESS=010.000.001.010
-      - CLOUD_BROADCAST_ADDRESS=010.000.001.255
-      - RADIO_ADDRESS=172.000.001.010
-      - RADIO_BROADCAST_ADDRESS=172.000.001.255
+      - DEVICE_IDENTIFIER=11
+      - RADIO_ADDRESS=172.000.001.011
+      - RADIO_MULTICAST_ADDRESS=239.255.128.127
+      - CLOUD_ADDRESS=010.000.001.011
+      - CLOUD_MULTICAST_ADDRESS=239.255.128.128
     networks:
-      cloud:
-        ipv4_address: 10.0.1.10
       radio:
-        ipv4_address: 172.0.1.10
+        ipv4_address: 172.0.1.11
+        priority: 1000
+      cloud:
+        ipv4_address: 10.0.1.11
+        priority: 900
   drone2:
     image: stardemocore:dev
     build:
       context: ./
       dockerfile: ./Dockerfile
     environment:
-      - DEVICE_IDENTIFIER=11
-      - CLOUD_ADDRESS=010.000.001.011
-      - CLOUD_BROADCAST_ADDRESS=010.000.001.255
-      - RADIO_ADDRESS=172.000.001.011
-      - RADIO_BROADCAST_ADDRESS=172.000.001.255
+      - DEVICE_IDENTIFIER=12
+      - RADIO_ADDRESS=172.000.001.012
+      - RADIO_MULTICAST_ADDRESS=239.255.128.127
+      - CLOUD_ADDRESS=010.000.001.012
+      - CLOUD_MULTICAST_ADDRESS=239.255.128.128
     networks:
-      cloud:
-        ipv4_address: 10.0.1.11
       radio:
-        ipv4_address: 172.0.1.11
+        ipv4_address: 172.0.1.12
+        priority: 1000
+      cloud:
+        ipv4_address: 10.0.1.12
+        priority: 900
   drone3:
     image: stardemocore:dev
     build:
       context: ./
       dockerfile: ./Dockerfile
     environment:
-      - DEVICE_IDENTIFIER=12
-      - CLOUD_ADDRESS=010.000.001.012
-      - CLOUD_BROADCAST_ADDRESS=010.000.001.255
-      - RADIO_ADDRESS=172.000.001.012
-      - RADIO_BROADCAST_ADDRESS=172.000.001.255
+      - DEVICE_IDENTIFIER=13
+      - RADIO_ADDRESS=172.000.001.013
+      - RADIO_MULTICAST_ADDRESS=239.255.128.127
+      - CLOUD_ADDRESS=010.000.001.013
+      - CLOUD_MULTICAST_ADDRESS=239.255.128.128
     networks:
-      cloud:
-        ipv4_address: 10.0.1.12
       radio:
-        ipv4_address: 172.0.1.12
+        ipv4_address: 172.0.1.13
+        priority: 1000
+      cloud:
+        ipv4_address: 10.0.1.13
+        priority: 900
+  drone4:
+    image: stardemocore:dev
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    environment:
+      - DEVICE_IDENTIFIER=14
+      - RADIO_ADDRESS=172.000.001.014
+      - RADIO_MULTICAST_ADDRESS=239.255.128.127
+      - CLOUD_ADDRESS=010.000.001.014
+      - CLOUD_MULTICAST_ADDRESS=239.255.128.128
+    networks:
+      radio:
+        ipv4_address: 172.0.1.14
+        priority: 1000
+      cloud:
+        ipv4_address: 10.0.1.14
+        priority: 900
+  drone5:
+    image: stardemocore:dev
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    environment:
+      - DEVICE_IDENTIFIER=15
+      - RADIO_ADDRESS=172.000.001.015
+      - RADIO_MULTICAST_ADDRESS=239.255.128.127
+      - CLOUD_ADDRESS=010.000.001.015
+      - CLOUD_MULTICAST_ADDRESS=239.255.128.128
+    networks:
+      radio:
+        ipv4_address: 172.0.1.15
+        priority: 1000
+      cloud:
+        ipv4_address: 10.0.1.15
+        priority: 900
 
   # wireshark:
   #   image: lscr.io/linuxserver/wireshark:latest
@@ -69,15 +111,14 @@ services:
   #   restart: unless-stopped
 
 networks:
+  radio:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 172.0.1.0/24
   cloud:
     driver: bridge
     ipam:
      config:
        - subnet: 10.0.1.0/24
          gateway: 10.0.1.1
-  radio:
-    driver: bridge
-    ipam:
-     config:
-       - subnet: 172.0.1.0/24
-  

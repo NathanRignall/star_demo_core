@@ -20,7 +20,7 @@ begin
       Control.Schedule;
       Network.Schedule;
 
-      delay 2.0;
+      delay 0.1;
 
    end loop;
 

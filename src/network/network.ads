@@ -1,3 +1,4 @@
+with Ada.Real_Time;
 with Interfaces;
 with Drivers.Ethernet;
 
@@ -11,8 +12,8 @@ package Network is
 
    -- Stores mapping of devices identifiers to their IP addresses
 
-   type Device_Address_Index_Type is range 0 .. 10;
-   Device_Address_Index_Default : constant Device_Address_Index_Type := 0;
+   type Device_Address_Index_Type is range 1 .. 10;
+   Device_Address_Index_Default : constant Device_Address_Index_Type := 1;
 
    type Device_Address_Type is record
       Identifier : Device_Identifier_Type;
@@ -36,16 +37,18 @@ package Network is
 
    -- Store the list of devices currently connected to the network
 
-   type Connected_Device_Index_Type is range 0 .. 10;
-   Connected_Device_Index_Default : constant Connected_Device_Index_Type := 0;
+   type Connected_Device_Index_Type is range 1 .. 10;
+   Connected_Device_Index_Default : constant Connected_Device_Index_Type := 1;
 
    type Connected_Device_Type is record
       Identifier : Device_Identifier_Type;
       Active     : Boolean;
+      Time       : Ada.Real_Time.Time;
    end record;
    Connected_Device_Default : constant Connected_Device_Type :=
      Connected_Device_Type'
-       (Identifier => Device_Identifier_Default, Active => False);
+       (Identifier => Device_Identifier_Default, Active => False,
+        Time       => Ada.Real_Time.Clock);
 
    type Connected_Device_Array_Type is
      array (Connected_Device_Index_Type) of Connected_Device_Type;
@@ -102,7 +105,6 @@ package Network is
       Payload        at 0 * 16 range 53 .. 2_103;
    end record;
    for Packet_Type'Size use 2_104;
-
    Packet_Default : constant Packet_Type :=
      Packet_Type'
        (Packet_Variant => Packet_Variant_Default,
@@ -117,7 +119,7 @@ package Network is
    Packet_Index_Default : constant Packet_Index_Type := 0;
 
    type Packet_Array_Type is array (Packet_Index_Type) of Packet_Type;
-   for Packet_Array_Type'Size use 538624;
+   for Packet_Array_Type'Size use 538_624;
    Packet_Array_Default : constant Packet_Array_Type :=
      Packet_Array_Type'(others => Packet_Default);
 

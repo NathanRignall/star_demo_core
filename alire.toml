@@ -8,10 +8,9 @@ maintainers-logins = ["NathanRignall"]
 
 executables = ["star_demo_core"]
 
-[[depends-on]]
-star_comms = "0.1.0"
-
-[[pins]]
-star_comms = { path='../star_comms' }
-[[depends-on]]
-dotenv = "^1.0.0"
+[environment]
+DEVICE_IDENTIFIER.set = "89"
+CLOUD_ADDRESS.set = "010.005.001.089"
+CLOUD_BROADCAST_ADDRESS.set = "010.000.001.255"
+RADIO_ADDRESS.set = "172.000.001.089"
+RADIO_BROADCAST_ADDRESS.set = "172.000.001.255"

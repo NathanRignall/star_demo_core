@@ -20,9 +20,16 @@ package Drivers.Ethernet is
    type Port_Type is range 1 .. 65_535;
    Port_Default : constant Port_Type := Port_Type'Last;
 
+   type Address_Port_Type is record
+      Address : Address_V4_Type;
+      Port    : Port_Type;
+   end record;
+   Address_Port_Default : constant Address_Port_Type :=
+     (Address => Address_V4_Default, Port => Port_Default);
+
    type Ethernet
-     (Address            : Address_V4_Access_Type; Port : Port_Type;
-      Broadcast_Address : Address_V4_Access_Type)
+     (Address           : Address_V4_Access_Type; Port : Port_Type;
+      Multicast_Address : Address_V4_Access_Type)
    is
      tagged private;
 
@@ -43,8 +50,8 @@ package Drivers.Ethernet is
 private
 
    type Ethernet
-     (Address            : Address_V4_Access_Type; Port : Port_Type;
-      Broadcast_Address : Address_V4_Access_Type)
+     (Address           : Address_V4_Access_Type; Port : Port_Type;
+      Multicast_Address : Address_V4_Access_Type)
    is
    tagged limited record
 

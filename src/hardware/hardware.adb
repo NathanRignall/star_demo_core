@@ -7,9 +7,9 @@ package body Hardware is
 
       Ada.Text_IO.Put_Line ("Hardware Initialize");
 
-      Ethernet.Initialize;
       Radio.Initialize;
-
+      Cloud.Initialize;
+      
    end Initialize;
 
 end Hardware;

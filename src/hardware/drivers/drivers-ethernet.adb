@@ -1,7 +1,10 @@
+with Ada.Text_IO;
+
 package body Drivers.Ethernet is
 
    procedure Initialize (This : in out Ethernet) is
-      Server_Address : GNAT.Sockets.Sock_Addr_Type;
+      Server_Address    : GNAT.Sockets.Sock_Addr_Type;
+      Multicast_Address : GNAT.Sockets.Inet_Addr_Type;
    begin
 
       -- set the server address
@@ -13,16 +16,67 @@ package body Drivers.Ethernet is
                (Family => GNAT.Sockets.Family_Inet,
                 Sin_V4 =>
                   GNAT.Sockets.Inet_Addr_V4_Type'
-                    (1 => GNAT.Sockets.Inet_Addr_Comp_Type (This.Address (1)),
-                     2 => GNAT.Sockets.Inet_Addr_Comp_Type (This.Address (2)),
-                     3 => GNAT.Sockets.Inet_Addr_Comp_Type (This.Address (3)),
+                    (1 =>
+                       GNAT.Sockets.Inet_Addr_Comp_Type (This.Address.all (1)),
+                     2 =>
+                       GNAT.Sockets.Inet_Addr_Comp_Type (This.Address.all (2)),
+                     3 =>
+                       GNAT.Sockets.Inet_Addr_Comp_Type (This.Address.all (3)),
                      4 =>
-                       GNAT.Sockets.Inet_Addr_Comp_Type (This.Address (4)))),
+                       GNAT.Sockets.Inet_Addr_Comp_Type
+                         (This.Address.all (4)))),
            Port   => GNAT.Sockets.Port_Type (This.Port));
+
+      Server_Address.Addr := GNAT.Sockets.Any_Inet_Addr;
+
+      -- set the multicast address
+      Multicast_Address :=
+        GNAT.Sockets.Inet_Addr_Type'
+          (Family => GNAT.Sockets.Family_Inet,
+           Sin_V4 =>
+             GNAT.Sockets.Inet_Addr_V4_Type'
+               (1 =>
+                  GNAT.Sockets.Inet_Addr_Comp_Type
+                    (This.Multicast_Address (1)),
+                2 =>
+                  GNAT.Sockets.Inet_Addr_Comp_Type
+                    (This.Multicast_Address (2)),
+                3 =>
+                  GNAT.Sockets.Inet_Addr_Comp_Type
+                    (This.Multicast_Address (3)),
+                4 =>
+                  GNAT.Sockets.Inet_Addr_Comp_Type
+                    (This.Multicast_Address (4))));
+
+      Ada.Text_IO.Put_Line
+        ("IP" & This.Address (1)'Image & "." & This.Address (2)'Image & "." &
+         This.Address (3)'Image & "." & This.Address (4)'Image & ":" &
+         This.Port'Image);
 
       -- create the socket
       GNAT.Sockets.Create_Socket
         (This.Socket, GNAT.Sockets.Family_Inet, GNAT.Sockets.Socket_Datagram);
+
+      -- enable broadcast
+      GNAT.Sockets.Set_Socket_Option
+        (This.Socket, GNAT.Sockets.IP_Protocol_For_IP_Level,
+         (GNAT.Sockets.Broadcast, True));
+
+      -- join the multicast group
+      GNAT.Sockets.Set_Socket_Option
+        (This.Socket, GNAT.Sockets.IP_Protocol_For_IP_Level,
+        (GNAT.Sockets.Add_Membership, Multicast_Address,
+          Server_Address.Addr));
+
+      -- set multicast loopback
+      GNAT.Sockets.Set_Socket_Option
+        (This.Socket, GNAT.Sockets.IP_Protocol_For_IP_Level,
+         (GNAT.Sockets.Multicast_Loop, False));
+
+      -- enable reuse address
+      GNAT.Sockets.Set_Socket_Option
+        (This.Socket, GNAT.Sockets.Socket_Level,
+         (GNAT.Sockets.Reuse_Address, True));
 
       -- create a selector
       GNAT.Sockets.Create_Selector (This.Selector);
