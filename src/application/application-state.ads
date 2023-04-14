@@ -1,4 +1,3 @@
-with Types.Schedule;
 with Types.Physics;
 
 package Application.State is

@@ -10,7 +10,7 @@ package body Application.Telemetry is
    procedure Initialize is
    begin
 
-      null;
+      Ada.Text_IO.Put_Line ("Telemetry Initialize");
 
    end Initialize;
 
@@ -30,8 +30,6 @@ package body Application.Telemetry is
    end Schedule;
 
    procedure Send_Location is
-
-      use type Application.Network.Payload_Index_Type;
 
       Telemetry_Packet : Telemetry_Packet_Type (Location);
 

@@ -140,7 +140,7 @@ package body Drivers.Ethernet is
       W_Socket_Set : GNAT.Sockets.Socket_Set_Type;
 
       Status  : GNAT.Sockets.Selector_Status;
-      Timeout : Duration := 0.0;
+      Timeout : constant Duration := 0.0;
 
       use type GNAT.Sockets.Selector_Status;
    begin

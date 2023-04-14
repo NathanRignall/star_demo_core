@@ -11,7 +11,7 @@ package body Application.Estimation is
    procedure Initialize is
    begin
 
-      null;
+      Ada.Text_IO.Put_Line ("Estimation Initialize");
 
    end Initialize;
 
@@ -33,10 +33,10 @@ package body Application.Estimation is
    procedure Estimate_State is
       use type Ada.Real_Time.Time_Span;
 
-      Time_Since_Last_Estimate_State_Exectution : Ada.Real_Time.Time_Span :=
+      Time_Since_Last_Estimate_State_Exectution : constant Ada.Real_Time.Time_Span :=
         Ada.Real_Time.Clock - Last_Estimate_State_Exectution;
 
-      Time_Delta : Duration :=
+      Time_Delta : constant Duration :=
         Ada.Real_Time.To_Duration (Time_Since_Last_Estimate_State_Exectution);
 
       Displacement : Types.Physics.Displacement_Vector_Type;

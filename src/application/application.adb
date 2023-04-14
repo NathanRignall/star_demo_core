@@ -1,5 +1,3 @@
-with Ada.Text_IO;
-
 with Application.Control;
 with Application.Estimation;
 with Application.Network;

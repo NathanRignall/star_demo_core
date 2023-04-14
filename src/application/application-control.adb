@@ -1,11 +1,11 @@
-with Application.Network;
+with Ada.Text_IO;
 
 package body Application.Control is
 
    procedure Initialize is
    begin
 
-      null;
+      Ada.Text_IO.Put_Line ("Control Initialize");
 
    end Initialize;
 
