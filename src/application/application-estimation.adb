@@ -19,10 +19,13 @@ package body Application.Estimation is
    begin
 
       case Cycle is
+
          when Types.Schedule.S_20ms =>
             Estimate_State;
+
          when others =>
             null;
+            
       end case;
 
    end Schedule;
@@ -41,17 +44,20 @@ package body Application.Estimation is
       -- calculate the velocity
       Application.State.Current_State.Physical_State.Velocity :=
         Types.Physics."*"
-          (Application.State.Current_State.Physical_State.Acceleration, Time_Delta);
+          (Application.State.Current_State.Physical_State.Acceleration,
+           Time_Delta);
 
       -- calculate the displacement
       Displacement :=
         Types.Physics."*"
-          (Application.State.Current_State.Physical_State.Velocity, Time_Delta);
+          (Application.State.Current_State.Physical_State.Velocity,
+           Time_Delta);
 
       -- update the position
       Application.State.Current_State.Physical_State.Position :=
         Types.Physics."+"
-          (Application.State.Current_State.Physical_State.Position, Displacement);
+          (Application.State.Current_State.Physical_State.Position,
+           Displacement);
 
       -- update the last execution time
       Last_Estimate_State_Exectution := Ada.Real_Time.Clock;

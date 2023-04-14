@@ -50,4 +50,16 @@ package body Hardware is
 
    end Initialize;
 
+   procedure Schedule (Cycle : Types.Schedule.Cycle_Type) is
+   begin
+
+      case Cycle is
+
+         when others =>
+            null;
+            
+      end case;
+
+   end Schedule;
+
 end Hardware;

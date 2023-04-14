@@ -13,8 +13,10 @@ package body Application.Control is
    begin
 
       case Cycle is
+
          when others =>
             null;
+            
       end case;
 
    end Schedule;

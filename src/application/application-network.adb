@@ -39,7 +39,8 @@ package body Application.Network is
 
       Ada.Text_IO.Put_Line ("Network Initialize");
 
-      Device_Identifier := Device_Identifier_Type'Value (Device_Identifier_Env);
+      Device_Identifier :=
+        Device_Identifier_Type'Value (Device_Identifier_Env);
 
       Ada.Text_IO.Put_Line ("Device Id" & Device_Identifier'Image);
 
@@ -115,7 +116,7 @@ package body Application.Network is
      (Transport           :     Transport_Type; Packet : out Packet_Type;
       Source_Address_Port : out Drivers.Ethernet.Address_Port_Type)
    is
-      Data : Ada.Streams.Stream_Element_Array (1 .. 1_024) := (others => 0);
+      Data : Ada.Streams.Stream_Element_Array (1 .. 1_031) := (others => 0);
       Last : Ada.Streams.Stream_Element_Offset;
 
       New_Packet : Packet_Type;
@@ -155,20 +156,26 @@ package body Application.Network is
                Process_Alive_Packet (Transport, Packet, Source_Address_Port);
 
             when Telemetry =>
-               Ada.Text_IO.Put_Line ("Telemetry" & Packet.Source'Image);
+               Ada.Text_IO.Put_Line
+                 ("Telemetry" & Packet.Source'Image & " Packet:" &
+                  Packet.Packet_Number'Image & " Transport: " & Transport'Image);
 
             when Command =>
-               Ada.Text_IO.Put_Line ("Request" & Packet.Source'Image);
+               Ada.Text_IO.Put_Line
+                 ("Request:" & Packet.Source'Image & " Packet:" &
+                  Packet.Packet_Number'Image & " Transport: " & Transport'Image);
 
             when Response =>
-               Ada.Text_IO.Put_Line ("Response" & Packet.Source'Image);
+               Ada.Text_IO.Put_Line
+                 ("Response" & Packet.Source'Image & " Packet:" &
+                  Packet.Packet_Number'Image & " Transport: " & Transport'Image);
 
             when Unknown =>
-               Ada.Text_IO.Put_Line ("Unknown" & Packet.Source'Image);
+               Ada.Text_IO.Put_Line
+                 ("Unknown" & Packet.Source'Image & " Packet:" &
+                  Packet.Packet_Number'Image & " Transport: " & Transport'Image);
 
          end case;
-
-         null;
 
       else
 
@@ -322,7 +329,7 @@ package body Application.Network is
       Destination_Address : Drivers.Ethernet.Address_V4_Type := (127, 0, 0, 1);
 
       Last     : Ada.Streams.Stream_Element_Offset;
-      New_Data : Ada.Streams.Stream_Element_Array (1 .. 1024);
+      New_Data : Ada.Streams.Stream_Element_Array (1 .. 1_024);
       for New_Data'Address use Packet'Address;
    begin
 
@@ -386,40 +393,40 @@ package body Application.Network is
 
    end Send_Packet_Alive;
 
-   procedure Send_Telemetry
-     (Payload_Length : Payload_Index_Type; Payload : Payload_Array_Type)
-   is
-      Packet_Telemetry : Packet_Type;
-   begin
+   --  procedure Send_Telemetry
+   --    (Payload_Length : Payload_Index_Type; Payload : Payload_Array_Type)
+   --  is
+   --     Packet_Telemetry : Packet_Type;
+   --  begin
 
-      Packet_Telemetry :=
-        Packet_Type'
-          (Packet_Variant => Telemetry, Packet_Number => 0,
-           Source         => Device_Identifier, Target => 0,
-           Payload_Length => Payload_Length, Payload => Payload,
-           Broadcast      => False);
+   --     Packet_Telemetry :=
+   --       Packet_Type'
+   --         (Packet_Variant => Telemetry, Packet_Number => 0,
+   --          Source         => Device_Identifier, Target => 0,
+   --          Payload_Length => Payload_Length, Payload => Payload,
+   --          Broadcast      => False);
 
-      -- telemetry needs to sent to all connected devices on the radio
+   --     -- telemetry needs to sent to all connected devices on the radio
 
-      -- loop through the connected device array
-      for Device_Index in Connected_Device_Index_Type loop
+   --     -- loop through the connected device array
+   --     for Device_Index in Connected_Device_Index_Type loop
 
-         -- check if the device is active
-         if Connected_Device_Transport_Array (Radio) (Device_Index).Active then
+   --        -- check if the device is active
+   --        if Connected_Device_Transport_Array (Radio) (Device_Index).Active then
 
-            -- set the target
-            Packet_Telemetry.Target :=
-              Connected_Device_Transport_Array (Radio) (Device_Index)
-                .Identifier;
+   --           -- set the target
+   --           Packet_Telemetry.Target :=
+   --             Connected_Device_Transport_Array (Radio) (Device_Index)
+   --               .Identifier;
 
-            -- send the packet
-            Send_Packet (Packet_Telemetry);
+   --           -- send the packet
+   --           Send_Packet (Packet_Telemetry);
 
-         end if;
+   --        end if;
 
-      end loop;
+   --     end loop;
 
-   end Send_Telemetry;
+   --  end Send_Telemetry;
 
    procedure Cleanup_Connected_Device_Array is
       Current_Time : Ada.Real_Time.Time;

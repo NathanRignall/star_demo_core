@@ -16,6 +16,7 @@ procedure Star_Demo_Core is
    procedure Dispatch_Schedule (Cycle : Types.Schedule.Cycle_Type) is
    begin
 
+      Hardware.Schedule (Cycle);
       Application.Schedule (Cycle);
 
    end Dispatch_Schedule;
@@ -28,7 +29,7 @@ procedure Star_Demo_Core is
         Ada.Real_Time.Milliseconds (3_000);
       Next        : Ada.Real_Time.Time := Ada.Real_Time.Clock + Start_Delay;
 
-      type Cycle_Count is range 0 .. 250;
+      type Cycle_Count is range 1 .. 250;
       Cycle : Cycle_Count := Cycle_Count'First;
 
    begin
