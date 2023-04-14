@@ -55,7 +55,7 @@ package body Hardware is
 
       -- initialize the interfaces
       Radio := new Drivers.Ethernet.Ethernet_Type (Radio_Address, 3_000, Radio_Multicast_Address);
-      Cloud := new Drivers.Ethernet.Ethernet_Type (Cloud_Address, 3_000, Cloud_Multicast_Address);
+      Cloud := new Drivers.Ethernet.Ethernet_Type (Cloud_Address, 4_000, Cloud_Multicast_Address);
 
       -- initialize the interfaces
       Radio.Initialize;

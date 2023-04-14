@@ -369,6 +369,11 @@ package body Library.Network is
 
             Ada.Text_IO.Put_Line ("Unknown Target");
 
+            -- send the packet to cloud server
+            This.Cloud.Send
+            (Address => Drivers.Ethernet.Address_V4_Type'(192, 168, 65, 2),
+               Port    => This.Cloud.Port, Data => New_Data, Last => Last);
+
          end if;
 
       else
@@ -378,9 +383,9 @@ package body Library.Network is
            (Address => This.Radio.Multicast_Address.all,
             Port    => This.Radio.Port, Data => New_Data, Last => Last);
 
-         -- send the packet on cloud multicast
+         -- send the packet to cloud server
          This.Cloud.Send
-           (Address => This.Cloud.Multicast_Address.all,
+           (Address => Drivers.Ethernet.Address_V4_Type'(192, 168, 65, 2),
             Port    => This.Cloud.Port, Data => New_Data, Last => Last);
 
       end if;
@@ -554,8 +559,7 @@ package body Library.Network is
 
    function Get_Connected
      (This         : in out Network_Type; Transport : Transport_Type;
-      Device_Index :        Connected_Device_Index_Type)
-      return Connected_Device_Type
+      Device_Index : Connected_Device_Index_Type) return Connected_Device_Type
    is
    begin
       return This.Connected_Device_Transport_Array (Transport) (Device_Index);

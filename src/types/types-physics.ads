@@ -24,6 +24,12 @@ package Types.Physics is
    type Rotation_Type is delta 0.001 range -1_000.0 .. 1_000.0;
    type Rotation_Vector_Type is array (Axis_Type) of Rotation_Type;
 
+   type Angular_Velocity_Type is delta 0.001 range -1_000.0 .. 1_000.0;
+   type Angular_Velocity_Vector_Type is array (Axis_Type) of Angular_Velocity_Type;
+
+   type Angular_Acceleration_Type is delta 0.001 range -1_000.0 .. 1_000.0;
+   type Angular_Acceleration_Vector_Type is array (Axis_Type) of Angular_Acceleration_Type;
+
    type Scientific is digits 15;
 
    -- constants

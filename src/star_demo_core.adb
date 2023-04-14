@@ -109,9 +109,4 @@ begin
 
    null;
 
-   Ada.Text_IO.Put_Line ("Longitude_Type requires " & Integer'Image (Types.Physics.Longitude_Type'Size) & " bits");
-   Ada.Text_IO.Put_Line ("The delta value of Longitude_Type is " & Types.Physics.Longitude_Type'Image (Types.Physics.Longitude_Type'Delta));
-   Ada.Text_IO.Put_Line ("The minimum value of Longitude_Type is " & Types.Physics.Longitude_Type'Image (Types.Physics.Longitude_Type'First));
-   Ada.Text_IO.Put_Line ("The maximum value of Longitude_Type is " & Types.Physics.Longitude_Type'Image (Types.Physics.Longitude_Type'Last));
-
 end Star_Demo_Core;

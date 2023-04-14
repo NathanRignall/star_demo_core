@@ -42,15 +42,15 @@ package body Application.Estimation is
       Displacement : Types.Physics.Displacement_Vector_Type;
    begin
       -- calculate the velocity
-      Application.State.Current_State.Physical_State.Velocity :=
+      Application.State.Current_State.Physical_State.Velocity_Vector :=
         Types.Physics."*"
-          (Application.State.Current_State.Physical_State.Acceleration,
+          (Application.State.Current_State.Physical_State.Acceleration_Vector,
            Time_Delta);
 
       -- calculate the displacement
       Displacement :=
         Types.Physics."*"
-          (Application.State.Current_State.Physical_State.Velocity,
+          (Application.State.Current_State.Physical_State.Velocity_Vector,
            Time_Delta);
 
       -- update the position

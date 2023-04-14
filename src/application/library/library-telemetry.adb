@@ -71,6 +71,10 @@ package body Library.Telemetry is
 
       end loop;
 
+      -- send telemetry to cloud server (temporary solution)
+      New_Packet.Target := 0;
+      This.Network.Send_Packet (New_Packet);
+
    end Send_Location;
 
 end Library.Telemetry;
