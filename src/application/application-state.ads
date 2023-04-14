@@ -19,10 +19,10 @@ package Application.State is
           Physical_State_Type'
             (Position     =>
                Types.Physics.Position_Type'
-                 (Latitude => 100.0, Longitude => 40.0, Altitude => 1000.0),
+                 (Latitude => 45.0, Longitude => 40.0, Altitude => 1000.0),
              Acceleration =>
                Types.Physics.Acceleration_Vector_Type'(100.0, 0.0, 0.0),
-             Velocity => Types.Physics.Velocity_Vector_Type'(0.0, 0.0, 0.0),
+             Velocity => Types.Physics.Velocity_Vector_Type'(10.0, 0.0, 0.0),
              Rotation => Types.Physics.Rotation_Vector_Type'(0.0, 0.0, 0.0)));
 
 end Application.State;

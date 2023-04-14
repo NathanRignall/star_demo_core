@@ -1,64 +1,62 @@
-with Ada.Environment_Variables;
 with Ada.Streams;
 with Ada.Text_IO;
 
-with Hardware;
+package body Library.Network is
 
-package body Application.Network is
-
-   procedure Recieve_Process_Packets;
+   procedure Recieve_Process_Packets (This : in out Network_Type);
 
    procedure Receive_Packet
-     (Transport           :     Transport_Type; Packet : out Packet_Type;
-      Source_Address_Port : out Drivers.Ethernet.Address_Port_Type);
+     (This                : in out Network_Type; Transport : Transport_Type;
+      Packet              :    out Packet_Type;
+      Source_Address_Port :    out Drivers.Ethernet.Address_Port_Type);
 
    procedure Process_Packet
-     (Transport           : Transport_Type; Packet : Packet_Type;
-      Source_Address_Port : Drivers.Ethernet.Address_Port_Type);
+     (This                : in out Network_Type; Transport : Transport_Type;
+      Packet              :        Packet_Type;
+      Source_Address_Port :        Drivers.Ethernet.Address_Port_Type);
 
    procedure Process_Alive_Packet
-     (Transport           : Transport_Type; Packet : Packet_Type;
-      Source_Address_Port : Drivers.Ethernet.Address_Port_Type);
+     (This                : in out Network_Type; Transport : Transport_Type;
+      Packet              :        Packet_Type;
+      Source_Address_Port :        Drivers.Ethernet.Address_Port_Type);
 
-   procedure Send_Packet_Alive;
+   procedure Send_Packet_Alive (This : in out Network_Type);
 
-   procedure Cleanup_Connected_Device_Array;
+   procedure Cleanup_Connected_Device_Array (This : in out Network_Type);
 
    procedure Lookup_Address
-     (Transport : Transport_Type; Device_Identifier : Device_Identifier_Type;
-      Device_Address : out Drivers.Ethernet.Address_V4_Type);
+     (This              :     Network_Type; Transport : Transport_Type;
+      Device_Identifier :     Device_Identifier_Type;
+      Device_Address    : out Drivers.Ethernet.Address_V4_Type);
 
    function Is_Connected
-     (Transport : Transport_Type; Device_Identifier : Device_Identifier_Type)
-      return Boolean;
+     (This              : in out Network_Type; Transport : Transport_Type;
+      Device_Identifier :        Device_Identifier_Type) return Boolean;
 
-   procedure Initialize is
-      Device_Identifier_Env : constant String :=
-        Ada.Environment_Variables.Value ("DEVICE_IDENTIFIER");
+   procedure Initialize (This : in out Network_Type) is
    begin
 
-      Ada.Text_IO.Put_Line ("Network Initialize");
+      Ada.Text_IO.Put_Line ("Network_Type Initialize");
 
-      Device_Identifier :=
-        Device_Identifier_Type'Value (Device_Identifier_Env);
-
-      Ada.Text_IO.Put_Line ("Device Id" & Device_Identifier'Image);
+      Ada.Text_IO.Put_Line ("Device Id" & This.Device_Identifier'Image);
 
    end Initialize;
 
-   procedure Schedule (Cycle : Types.Schedule.Cycle_Type) is
+   procedure Schedule
+     (This : in out Network_Type; Cycle : Types.Schedule.Cycle_Type)
+   is
    begin
 
       case Cycle is
 
          when Types.Schedule.S_20ms =>
-            Recieve_Process_Packets;
+            Recieve_Process_Packets (This => This);
 
          when Types.Schedule.S_500ms =>
-            Cleanup_Connected_Device_Array;
+            This.Cleanup_Connected_Device_Array;
 
          when Types.Schedule.S_2000ms =>
-            Send_Packet_Alive;
+            This.Send_Packet_Alive;
 
          when others =>
             null;
@@ -67,7 +65,7 @@ package body Application.Network is
 
    end Schedule;
 
-   procedure Recieve_Process_Packets is
+   procedure Recieve_Process_Packets (This : in out Network_Type) is
       Packet              : Packet_Type;
       Source_Address_Port : Drivers.Ethernet.Address_Port_Type;
    begin
@@ -75,13 +73,13 @@ package body Application.Network is
       for Index in 1 .. 100 loop
 
          -- check if there is a new packet
-         if Hardware.Radio.Is_New_Data then
+         if This.Radio.all.Is_New_Data then
 
             -- get the packet
-            Receive_Packet (Radio, Packet, Source_Address_Port);
+            Receive_Packet (This, Radio, Packet, Source_Address_Port);
 
             -- process the packet
-            Process_Packet (Radio, Packet, Source_Address_Port);
+            Process_Packet (This, Radio, Packet, Source_Address_Port);
 
          else
 
@@ -95,13 +93,13 @@ package body Application.Network is
       for Index in 1 .. 100 loop
 
          -- check if there is a new packet
-         if Hardware.Cloud.Is_New_Data then
+         if This.Cloud.Is_New_Data then
 
             -- get the packet
-            Receive_Packet (Cloud, Packet, Source_Address_Port);
+            This.Receive_Packet (Cloud, Packet, Source_Address_Port);
 
             -- process the packet
-            Process_Packet (Cloud, Packet, Source_Address_Port);
+            This.Process_Packet (Cloud, Packet, Source_Address_Port);
 
          else
 
@@ -113,8 +111,9 @@ package body Application.Network is
    end Recieve_Process_Packets;
 
    procedure Receive_Packet
-     (Transport           :     Transport_Type; Packet : out Packet_Type;
-      Source_Address_Port : out Drivers.Ethernet.Address_Port_Type)
+     (This                : in out Network_Type; Transport : Transport_Type;
+      Packet              :    out Packet_Type;
+      Source_Address_Port :    out Drivers.Ethernet.Address_Port_Type)
    is
       Data : Ada.Streams.Stream_Element_Array (1 .. 1_031) := (others => 0);
       Last : Ada.Streams.Stream_Element_Offset;
@@ -126,12 +125,12 @@ package body Application.Network is
       case Transport is
 
          when Radio =>
-            Hardware.Radio.Receive
+            This.Radio.Receive
               (Source_Address_Port.Address, Source_Address_Port.Port, Data,
                Last);
 
          when Cloud =>
-            Hardware.Cloud.Receive
+            This.Cloud.Receive
               (Source_Address_Port.Address, Source_Address_Port.Port, Data,
                Last);
 
@@ -142,8 +141,9 @@ package body Application.Network is
    end Receive_Packet;
 
    procedure Process_Packet
-     (Transport           : Transport_Type; Packet : Packet_Type;
-      Source_Address_Port : Drivers.Ethernet.Address_Port_Type)
+     (This                : in out Network_Type; Transport : Transport_Type;
+      Packet              :        Packet_Type;
+      Source_Address_Port :        Drivers.Ethernet.Address_Port_Type)
    is
    begin
 
@@ -153,27 +153,32 @@ package body Application.Network is
 
             when Alive =>
 
-               Process_Alive_Packet (Transport, Packet, Source_Address_Port);
+               Process_Alive_Packet
+                 (This, Transport, Packet, Source_Address_Port);
 
             when Telemetry =>
                Ada.Text_IO.Put_Line
                  ("Telemetry" & Packet.Source'Image & " Packet:" &
-                  Packet.Packet_Number'Image & " Transport: " & Transport'Image);
+                  Packet.Packet_Number'Image & " Transport: " &
+                  Transport'Image);
 
             when Command =>
                Ada.Text_IO.Put_Line
                  ("Request:" & Packet.Source'Image & " Packet:" &
-                  Packet.Packet_Number'Image & " Transport: " & Transport'Image);
+                  Packet.Packet_Number'Image & " Transport: " &
+                  Transport'Image);
 
             when Response =>
                Ada.Text_IO.Put_Line
                  ("Response" & Packet.Source'Image & " Packet:" &
-                  Packet.Packet_Number'Image & " Transport: " & Transport'Image);
+                  Packet.Packet_Number'Image & " Transport: " &
+                  Transport'Image);
 
             when Unknown =>
                Ada.Text_IO.Put_Line
                  ("Unknown" & Packet.Source'Image & " Packet:" &
-                  Packet.Packet_Number'Image & " Transport: " & Transport'Image);
+                  Packet.Packet_Number'Image & " Transport: " &
+                  Transport'Image);
 
          end case;
 
@@ -186,8 +191,9 @@ package body Application.Network is
    end Process_Packet;
 
    procedure Process_Alive_Packet
-     (Transport           : Transport_Type; Packet : Packet_Type;
-      Source_Address_Port : Drivers.Ethernet.Address_Port_Type)
+     (This                : in out Network_Type; Transport : Transport_Type;
+      Packet              :        Packet_Type;
+      Source_Address_Port :        Drivers.Ethernet.Address_Port_Type)
    is
       No_Space : exception;
 
@@ -195,16 +201,18 @@ package body Application.Network is
    begin
 
       -- check if the device is already connected
-      if not Is_Connected (Transport, Packet.Source) then
+      if not Is_Connected (This, Transport, Packet.Source) then
 
          -- add the device to the connected device array
          for Device_Index in Connected_Device_Index_Type loop
 
-            if not Connected_Device_Transport_Array (Transport) (Device_Index)
+            if not This.Connected_Device_Transport_Array (Transport)
+                (Device_Index)
                 .Active
             then
 
-               Connected_Device_Transport_Array (Transport) (Device_Index) :=
+               This.Connected_Device_Transport_Array (Transport)
+                 (Device_Index) :=
                  Connected_Device_Type'
                    (Identifier => Packet.Source, Active => True,
                     Time       => Ada.Real_Time.Clock);
@@ -212,7 +220,7 @@ package body Application.Network is
                -- add the device to the device address array
                for Device_Address_Index in Device_Address_Index_Type loop
 
-                  if Device_Address_Transport_Array (Transport)
+                  if This.Device_Address_Transport_Array (Transport)
                       (Device_Address_Index)
                       .Identifier =
                     0
@@ -226,7 +234,7 @@ package body Application.Network is
                         Packet.Source'Image & " Transport: " &
                         Transport'Image);
 
-                     Device_Address_Transport_Array (Transport)
+                     This.Device_Address_Transport_Array (Transport)
                        (Device_Address_Index) :=
                        Device_Address_Type'
                          (Identifier => Packet.Source,
@@ -258,26 +266,26 @@ package body Application.Network is
          -- update the time
          for Device_Index in Connected_Device_Index_Type loop
 
-            if Connected_Device_Transport_Array (Transport) (Device_Index)
+            if This.Connected_Device_Transport_Array (Transport) (Device_Index)
                 .Identifier =
               Packet.Source
             then
 
-               Connected_Device_Transport_Array (Transport) (Device_Index)
+               This.Connected_Device_Transport_Array (Transport) (Device_Index)
                  .Time :=
                  Ada.Real_Time.Clock;
 
                -- check the ip address
                for Device_Address_Index in Device_Address_Index_Type loop
 
-                  if Device_Address_Transport_Array (Transport)
+                  if This.Device_Address_Transport_Array (Transport)
                       (Device_Address_Index)
                       .Identifier =
                     Packet.Source
                   then
 
                      -- check if the ip address has changed
-                     if Device_Address_Transport_Array (Transport)
+                     if This.Device_Address_Transport_Array (Transport)
                          (Device_Address_Index)
                          .Address /=
                        Source_Address_Port.Address
@@ -293,7 +301,7 @@ package body Application.Network is
                            Transport'Image);
 
                         -- update the ip address
-                        Device_Address_Transport_Array (Transport)
+                        This.Device_Address_Transport_Array (Transport)
                           (Device_Address_Index)
                           .Address :=
                           Source_Address_Port.Address;
@@ -325,7 +333,7 @@ package body Application.Network is
 
    end Process_Alive_Packet;
 
-   procedure Send_Packet (Packet : Packet_Type) is
+   procedure Send_Packet (This : in out Network_Type; Packet : Packet_Type) is
       Destination_Address : Drivers.Ethernet.Address_V4_Type := (127, 0, 0, 1);
 
       Last     : Ada.Streams.Stream_Element_Offset;
@@ -337,24 +345,24 @@ package body Application.Network is
       if not Packet.Broadcast then
 
          -- check if the intended destination is direct
-         if Is_Connected (Radio, Packet.Target) then
+         if Is_Connected (This, Radio, Packet.Target) then
 
             -- lookup the ip
-            Lookup_Address (Radio, Packet.Target, Destination_Address);
+            Lookup_Address (This, Radio, Packet.Target, Destination_Address);
 
             -- send the packet
-            Hardware.Radio.Send
-              (Address => Destination_Address, Port => Hardware.Radio.Port,
+            This.Radio.Send
+              (Address => Destination_Address, Port => This.Radio.Port,
                Data    => New_Data, Last => Last);
 
-         elsif Is_Connected (Cloud, Packet.Target) then
+         elsif Is_Connected (This, Cloud, Packet.Target) then
 
             -- lookup the ip
-            Lookup_Address (Cloud, Packet.Target, Destination_Address);
+            Lookup_Address (This, Cloud, Packet.Target, Destination_Address);
 
             -- send the packet
-            Hardware.Cloud.Send
-              (Address => Destination_Address, Port => Hardware.Cloud.Port,
+            This.Cloud.Send
+              (Address => Destination_Address, Port => This.Cloud.Port,
                Data    => New_Data, Last => Last);
 
          else
@@ -366,69 +374,34 @@ package body Application.Network is
       else
 
          -- send the packet on radio multicast
-         Hardware.Radio.Send
-           (Address => Hardware.Radio.Multicast_Address.all,
-            Port    => Hardware.Radio.Port, Data => New_Data, Last => Last);
+         This.Radio.Send
+           (Address => This.Radio.Multicast_Address.all,
+            Port    => This.Radio.Port, Data => New_Data, Last => Last);
 
          -- send the packet on cloud multicast
-         Hardware.Cloud.Send
-           (Address => Hardware.Cloud.Multicast_Address.all,
-            Port    => Hardware.Cloud.Port, Data => New_Data, Last => Last);
+         This.Cloud.Send
+           (Address => This.Cloud.Multicast_Address.all,
+            Port    => This.Cloud.Port, Data => New_Data, Last => Last);
 
       end if;
 
    end Send_Packet;
 
-   procedure Send_Packet_Alive is
+   procedure Send_Packet_Alive (This : in out Network_Type) is
       Packet_Alive : Packet_Type;
    begin
 
       Packet_Alive :=
         Packet_Type'
           (Packet_Variant => Alive, Packet_Number => 0,
-           Source => Device_Identifier, Target => 0, Payload_Length => 0,
+           Source => This.Device_Identifier, Target => 0, Payload_Length => 0,
            Payload        => Payload_Array_Default, Broadcast => True);
 
-      Send_Packet (Packet_Alive);
+      Send_Packet (This, Packet_Alive);
 
    end Send_Packet_Alive;
 
-   --  procedure Send_Telemetry
-   --    (Payload_Length : Payload_Index_Type; Payload : Payload_Array_Type)
-   --  is
-   --     Packet_Telemetry : Packet_Type;
-   --  begin
-
-   --     Packet_Telemetry :=
-   --       Packet_Type'
-   --         (Packet_Variant => Telemetry, Packet_Number => 0,
-   --          Source         => Device_Identifier, Target => 0,
-   --          Payload_Length => Payload_Length, Payload => Payload,
-   --          Broadcast      => False);
-
-   --     -- telemetry needs to sent to all connected devices on the radio
-
-   --     -- loop through the connected device array
-   --     for Device_Index in Connected_Device_Index_Type loop
-
-   --        -- check if the device is active
-   --        if Connected_Device_Transport_Array (Radio) (Device_Index).Active then
-
-   --           -- set the target
-   --           Packet_Telemetry.Target :=
-   --             Connected_Device_Transport_Array (Radio) (Device_Index)
-   --               .Identifier;
-
-   --           -- send the packet
-   --           Send_Packet (Packet_Telemetry);
-
-   --        end if;
-
-   --     end loop;
-
-   --  end Send_Telemetry;
-
-   procedure Cleanup_Connected_Device_Array is
+   procedure Cleanup_Connected_Device_Array (This : in out Network_Type) is
       Current_Time : Ada.Real_Time.Time;
       Timeout_Time : Ada.Real_Time.Time;
 
@@ -441,7 +414,7 @@ package body Application.Network is
          for Device_Index in Connected_Device_Index_Type loop
 
             -- check if the device is active
-            if Connected_Device_Transport_Array (Transport) (Device_Index)
+            if This.Connected_Device_Transport_Array (Transport) (Device_Index)
                 .Active
             then
 
@@ -450,9 +423,10 @@ package body Application.Network is
 
                -- get the timeout time
                Timeout_Time :=
-                 Connected_Device_Transport_Array (Transport) (Device_Index)
+                 This.Connected_Device_Transport_Array (Transport)
+                   (Device_Index)
                    .Time +
-                 Device_Timeout;
+                 This.Connected_Device_Timeout;
 
                -- check if the device has timed out
                if Current_Time > Timeout_Time then
@@ -460,48 +434,48 @@ package body Application.Network is
                   -- remove the device from the device address array
                   for Device_Address_Index in Device_Address_Index_Type loop
 
-                     if Device_Address_Transport_Array (Transport)
+                     if This.Device_Address_Transport_Array (Transport)
                          (Device_Address_Index)
                          .Identifier =
-                       Connected_Device_Transport_Array (Transport)
+                       This.Connected_Device_Transport_Array (Transport)
                          (Device_Index)
                          .Identifier
                      then
 
                         Ada.Text_IO.Put_Line
                           ("Remove IP:" &
-                           Device_Address_Transport_Array (Transport)
+                           This.Device_Address_Transport_Array (Transport)
                              (Device_Address_Index)
                              .Address
                              (1)'
                              Image &
                            "." &
-                           Device_Address_Transport_Array (Transport)
+                           This.Device_Address_Transport_Array (Transport)
                              (Device_Address_Index)
                              .Address
                              (2)'
                              Image &
                            "." &
-                           Device_Address_Transport_Array (Transport)
+                           This.Device_Address_Transport_Array (Transport)
                              (Device_Address_Index)
                              .Address
                              (3)'
                              Image &
                            "." &
-                           Device_Address_Transport_Array (Transport)
+                           This.Device_Address_Transport_Array (Transport)
                              (Device_Address_Index)
                              .Address
                              (4)'
                              Image &
                            "." & " ID:" &
-                           Connected_Device_Transport_Array (Transport)
+                           This.Connected_Device_Transport_Array (Transport)
                              (Device_Index)
                              .Identifier'
                              Image &
                            " Transport: " & Transport'Image);
 
                         -- remove the device from the device address array
-                        Device_Address_Transport_Array (Transport)
+                        This.Device_Address_Transport_Array (Transport)
                           (Device_Address_Index) :=
                           Device_Address_Default;
 
@@ -510,7 +484,7 @@ package body Application.Network is
                   end loop;
 
                   -- remove the device from the connected device array
-                  Connected_Device_Transport_Array (Transport)
+                  This.Connected_Device_Transport_Array (Transport)
                     (Device_Index) :=
                     Connected_Device_Default;
 
@@ -525,20 +499,23 @@ package body Application.Network is
    end Cleanup_Connected_Device_Array;
 
    procedure Lookup_Address
-     (Transport : Transport_Type; Device_Identifier : Device_Identifier_Type;
-      Device_Address : out Drivers.Ethernet.Address_V4_Type)
+     (This              :     Network_Type; Transport : Transport_Type;
+      Device_Identifier :     Device_Identifier_Type;
+      Device_Address    : out Drivers.Ethernet.Address_V4_Type)
    is
    begin
 
       for Device_Address_Index in Device_Address_Index_Type loop
 
-         if Device_Address_Transport_Array (Transport) (Device_Address_Index)
+         if This.Device_Address_Transport_Array (Transport)
+             (Device_Address_Index)
              .Identifier =
            Device_Identifier
          then
 
             Device_Address :=
-              Device_Address_Transport_Array (Transport) (Device_Address_Index)
+              This.Device_Address_Transport_Array (Transport)
+                (Device_Address_Index)
                 .Address;
 
             return;
@@ -550,16 +527,17 @@ package body Application.Network is
    end Lookup_Address;
 
    function Is_Connected
-     (Transport : Transport_Type; Device_Identifier : Device_Identifier_Type)
-      return Boolean
+     (This              : in out Network_Type; Transport : Transport_Type;
+      Device_Identifier :        Device_Identifier_Type) return Boolean
    is
    begin
 
       for Device_Index in Connected_Device_Index_Type loop
 
-         if Connected_Device_Transport_Array (Transport) (Device_Index).Active
+         if This.Connected_Device_Transport_Array (Transport) (Device_Index)
+             .Active
            and then
-             Connected_Device_Transport_Array (Transport) (Device_Index)
+             This.Connected_Device_Transport_Array (Transport) (Device_Index)
                .Identifier =
              Device_Identifier
          then
@@ -574,4 +552,13 @@ package body Application.Network is
 
    end Is_Connected;
 
-end Application.Network;
+   function Get_Connected
+     (This         : in out Network_Type; Transport : Transport_Type;
+      Device_Index :        Connected_Device_Index_Type)
+      return Connected_Device_Type
+   is
+   begin
+      return This.Connected_Device_Transport_Array (Transport) (Device_Index);
+   end Get_Connected;
+
+end Library.Network;

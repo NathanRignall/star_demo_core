@@ -2,7 +2,7 @@ with Ada.Text_IO;
 
 package body Drivers.Ethernet is
 
-   procedure Initialize (This : in out Ethernet) is
+   procedure Initialize (This : in out Ethernet_Type) is
       Server_Address    : GNAT.Sockets.Sock_Addr_Type;
       Multicast_Address : GNAT.Sockets.Inet_Addr_Type;
    begin
@@ -85,7 +85,7 @@ package body Drivers.Ethernet is
    end Initialize;
 
    procedure Send
-     (This :     Ethernet; Address : Address_V4_Type; Port : Port_Type;
+     (This :     Ethernet_Type; Address : Address_V4_Type; Port : Port_Type;
       Data :     Ada.Streams.Stream_Element_Array;
       Last : out Ada.Streams.Stream_Element_Offset)
    is
@@ -113,7 +113,7 @@ package body Drivers.Ethernet is
    end Send;
 
    procedure Receive
-     (This :     Ethernet; Address : out Address_V4_Type; Port : out Port_Type;
+     (This :     Ethernet_Type; Address : out Address_V4_Type; Port : out Port_Type;
       Data : out Ada.Streams.Stream_Element_Array;
       Last : out Ada.Streams.Stream_Element_Offset)
    is
@@ -135,7 +135,7 @@ package body Drivers.Ethernet is
 
    end Receive;
 
-   function Is_New_Data (This : Ethernet) return Boolean is
+   function Is_New_Data (This : Ethernet_Type) return Boolean is
       R_Socket_Set : GNAT.Sockets.Socket_Set_Type;
       W_Socket_Set : GNAT.Sockets.Socket_Set_Type;
 

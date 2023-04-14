@@ -11,11 +11,11 @@ package body Types.Physics is
         Position_Type'
           (Longitude =>
              Left.Longitude +
-             Bearing_Type
+             Longitude_Type
                ((Scientific (Right (Y)) / Earth_Radius) * (180.0 / Pi)),
            Latitude  =>
              Left.Latitude +
-             Bearing_Type
+             Latitude_Type
                ((Scientific (Right (X)) / Earth_Radius) * (180.0 / Pi) /
                 Scientific
                   (Ada.Numerics.Elementary_Functions.Cos
@@ -32,11 +32,11 @@ package body Types.Physics is
         Position_Type'
           (Longitude =>
              Right.Longitude +
-             Bearing_Type
+             Longitude_Type
                ((Scientific (Left (Y)) / Earth_Radius) * (180.0 / Pi)),
            Latitude  =>
              Right.Latitude +
-             Bearing_Type
+             Latitude_Type
                ((Scientific (Left (X)) / Earth_Radius) * (180.0 / Pi) /
                 Scientific
                   (Ada.Numerics.Elementary_Functions.Cos

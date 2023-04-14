@@ -1,12 +1,14 @@
 package Drivers.Radio is
 
-   type Radio is tagged private;
+   type Radio_Type is tagged private;
 
-   procedure Initialize (This : in out Radio);
+   type Radio_Access_Type is access Radio_Type'Class;
+
+   procedure Initialize (This : in out Radio_Type);
 
 private
 
-   type Radio is tagged record
+   type Radio_Type is tagged record
 
       null;
 

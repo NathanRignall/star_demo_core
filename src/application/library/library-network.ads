@@ -5,15 +5,13 @@ with Drivers.Ethernet;
 
 with Types.Schedule;
 
-package Application.Network is
+package Library.Network is
 
    type Transport_Type is (Radio, Cloud);
 
    type Device_Identifier_Type is mod 2**16;
    for Device_Identifier_Type'Size use 16;
    Device_Identifier_Default : constant Device_Identifier_Type := 0;
-
-   Device_Identifier : Device_Identifier_Type := Device_Identifier_Default;
 
    type Device_Identifier_Index_Type is range 1 .. 100;
    Device_Identifier_Index_Default : constant Device_Identifier_Index_Type :=
@@ -50,9 +48,6 @@ package Application.Network is
      Device_Address_Transport_Array_Type'
        (others => Device_Address_Array_Default);
 
-   Device_Address_Transport_Array : Device_Address_Transport_Array_Type :=
-     Device_Address_Transport_Array_Default;
-
    -- Store the list of devices currently connected to the network
 
    type Connected_Device_Index_Type is range 1 .. 50;
@@ -80,12 +75,6 @@ package Application.Network is
      Connected_Device_Transport_Array_Type'
        (others => Connected_Device_Array_Default);
 
-   Connected_Device_Transport_Array : Connected_Device_Transport_Array_Type :=
-     Connected_Device_Transport_Array_Default;
-
-   Device_Timeout : constant Ada.Real_Time.Time_Span :=
-     Ada.Real_Time.Seconds (5);
-
    -- Define how packets are structured
 
    type Packet_Variant_Type is (Alive, Telemetry, Command, Response, Unknown);
@@ -104,7 +93,7 @@ package Application.Network is
 
    type Payload_Array_Type is
      array (Payload_Index_Type) of Interfaces.Unsigned_8;
-   for Payload_Array_Type'Size use 8192;
+   for Payload_Array_Type'Size use 8_192;
    Payload_Array_Default : constant Payload_Array_Type :=
      Payload_Array_Type'(others => 0);
 
@@ -143,10 +132,43 @@ package Application.Network is
    for Packet_Index_Type'Size use 8;
    Packet_Index_Default : constant Packet_Index_Type := 0;
 
-   procedure Initialize;
+   type Network_Type
+     (Device_Identifier : Device_Identifier_Type;
+      Radio             : Drivers.Ethernet.Ethernet_Access_Type;
+      Cloud             : Drivers.Ethernet.Ethernet_Access_Type)
+   is
+     tagged private;
 
-   procedure Schedule (Cycle : Types.Schedule.Cycle_Type);
+   type Network_Access_Type is access Network_Type'Class;
 
-   procedure Send_Packet (Packet : Packet_Type);
+   procedure Initialize (This : in out Network_Type);
 
-end Application.Network;
+   procedure Schedule
+     (This : in out Network_Type; Cycle : Types.Schedule.Cycle_Type);
+
+   procedure Send_Packet (This : in out Network_Type; Packet : Packet_Type);
+
+   function Get_Connected
+     (This         : in out Network_Type; Transport : Transport_Type;
+      Device_Index :        Connected_Device_Index_Type)
+      return Connected_Device_Type;
+
+private
+
+   type Network_Type
+     (Device_Identifier : Device_Identifier_Type;
+      Radio             : Drivers.Ethernet.Ethernet_Access_Type;
+      Cloud             : Drivers.Ethernet.Ethernet_Access_Type)
+   is
+   tagged record
+
+      Device_Address_Transport_Array   : Device_Address_Transport_Array_Type :=
+        Device_Address_Transport_Array_Default;
+      Connected_Device_Transport_Array : Connected_Device_Transport_Array_Type :=
+        Connected_Device_Transport_Array_Default;
+      Connected_Device_Timeout         : Ada.Real_Time.Time_Span :=
+        Ada.Real_Time.Seconds (5);
+
+   end record;
+
+end Library.Network;

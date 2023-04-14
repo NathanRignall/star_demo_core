@@ -1,26 +1,27 @@
 package Types.Physics is
 
-   type Bearing_Type is digits 7;
-   type Altitude_Type is digits 7;
+   type Longitude_Type is delta 0.000_00_1 range -180.0 .. 180.0;
+   type Latitude_Type is delta 0.000_00_1 range -90.0 .. 90.0;
+   type Altitude_Type is delta 0.001 range -10_000.0 .. 40_000.0;
 
    type Position_Type is record
-      Longitude : Bearing_Type;
-      Latitude  : Bearing_Type;
+      Longitude : Longitude_Type;
+      Latitude  : Latitude_Type;
       Altitude  : Altitude_Type;
    end record;
 
    type Axis_Type is (X, Y, Z);
 
-   type Displacement_Type is digits 7 range -1_000.0 .. 1_000.0;
+   type Displacement_Type is delta 0.001 range -1_000.0 .. 1_000.0;
    type Displacement_Vector_Type is array (Axis_Type) of Displacement_Type;
 
-   type Velocity_Type is digits 7 range -1_000.0 .. 1_000.0;
+   type Velocity_Type is delta 0.001 range -1_000.0 .. 1_000.0;
    type Velocity_Vector_Type is array (Axis_Type) of Velocity_Type;
 
-   type Acceleration_Type is digits 7 range -1_000.0 .. 1_000.0;
+   type Acceleration_Type is delta 0.001 range -1_000.0 .. 1_000.0;
    type Acceleration_Vector_Type is array (Axis_Type) of Acceleration_Type;
 
-   type Rotation_Type is digits 7 range -180.0 .. 180.0;
+   type Rotation_Type is delta 0.001 range -1_000.0 .. 1_000.0;
    type Rotation_Vector_Type is array (Axis_Type) of Rotation_Type;
 
    type Scientific is digits 15;

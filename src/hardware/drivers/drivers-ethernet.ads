@@ -27,29 +27,31 @@ package Drivers.Ethernet is
    Address_Port_Default : constant Address_Port_Type :=
      (Address => Address_V4_Default, Port => Port_Default);
 
-   type Ethernet
+   type Ethernet_Type
      (Address           : Address_V4_Access_Type; Port : Port_Type;
       Multicast_Address : Address_V4_Access_Type)
    is
      tagged private;
 
-   procedure Initialize (This : in out Ethernet);
+   type Ethernet_Access_Type is access Ethernet_Type'Class;
+
+   procedure Initialize (This : in out Ethernet_Type);
 
    procedure Send
-     (This :     Ethernet; Address : Address_V4_Type; Port : Port_Type;
+     (This :     Ethernet_Type; Address : Address_V4_Type; Port : Port_Type;
       Data :     Ada.Streams.Stream_Element_Array;
       Last : out Ada.Streams.Stream_Element_Offset);
 
    procedure Receive
-     (This :     Ethernet; Address : out Address_V4_Type; Port : out Port_Type;
-      Data : out Ada.Streams.Stream_Element_Array;
+     (This :     Ethernet_Type; Address : out Address_V4_Type;
+      Port : out Port_Type; Data : out Ada.Streams.Stream_Element_Array;
       Last : out Ada.Streams.Stream_Element_Offset);
 
-   function Is_New_Data (This : Ethernet) return Boolean;
+   function Is_New_Data (This : Ethernet_Type) return Boolean;
 
 private
 
-   type Ethernet
+   type Ethernet_Type
      (Address           : Address_V4_Access_Type; Port : Port_Type;
       Multicast_Address : Address_V4_Access_Type)
    is
