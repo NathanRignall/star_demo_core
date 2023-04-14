@@ -5,7 +5,6 @@ with Ada.Text_IO;
 with Hardware;
 with Application;
 
-with Types.Physics;
 with Types.Schedule;
 
 procedure Star_Demo_Core is

@@ -44,6 +44,15 @@ package body Types.Physics is
            Altitude  => Right.Altitude + Altitude_Type (Left (Z)));
    end "+";
 
+   function "+"
+     (Left, Right : Velocity_Vector_Type) return Velocity_Vector_Type
+   is
+   begin
+      return
+        Velocity_Vector_Type'
+          (Left (X) + Right (X), Left (Y) + Right (Y), Left (Z) + Right (Z));
+   end "+";
+
    function "*"
      (Left : Velocity_Vector_Type; Right : Duration)
       return Displacement_Vector_Type

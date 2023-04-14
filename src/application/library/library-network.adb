@@ -50,7 +50,7 @@ package body Library.Network is
       case Cycle is
 
          when Types.Schedule.S_20ms =>
-            Recieve_Process_Packets (This => This);
+            This.Recieve_Process_Packets;
 
          when Types.Schedule.S_500ms =>
             This.Cleanup_Connected_Device_Array;
@@ -162,17 +162,26 @@ package body Library.Network is
                   Packet.Packet_Number'Image & " Transport: " &
                   Transport'Image);
 
+               This.Packet_Collection(Telemetry).Packet_Index := Packet_Index_Type'Succ(This.Packet_Collection(Telemetry).Packet_Index);
+               This.Packet_Collection(Telemetry).Packet_Array (This.Packet_Collection(Telemetry).Packet_Index) := Packet;
+
             when Command =>
                Ada.Text_IO.Put_Line
                  ("Request:" & Packet.Source'Image & " Packet:" &
                   Packet.Packet_Number'Image & " Transport: " &
                   Transport'Image);
 
+               This.Packet_Collection(Command).Packet_Index := Packet_Index_Type'Succ(This.Packet_Collection(Command).Packet_Index);
+               This.Packet_Collection(Command).Packet_Array (This.Packet_Collection(Command).Packet_Index) := Packet;
+
             when Response =>
                Ada.Text_IO.Put_Line
                  ("Response" & Packet.Source'Image & " Packet:" &
                   Packet.Packet_Number'Image & " Transport: " &
                   Transport'Image);
+
+               This.Packet_Collection(Response).Packet_Index := Packet_Index_Type'Succ(This.Packet_Collection(Response).Packet_Index);
+               This.Packet_Collection(Response).Packet_Array (This.Packet_Collection(Response).Packet_Index) := Packet;
 
             when Unknown =>
                Ada.Text_IO.Put_Line
@@ -332,6 +341,19 @@ package body Library.Network is
       end if;
 
    end Process_Alive_Packet;
+
+   function Get_Packet (This : in out Network_Type; Variant : Packet_Variant_Type) return Packet_Type
+   is
+      New_Packet : Packet_Type := Packet_Default;
+   begin
+
+      New_Packet := This.Packet_Collection(Variant).Packet_Array (This.Packet_Collection(Variant).Packet_Index);
+
+      This.Packet_Collection(Variant).Packet_Array (This.Packet_Collection(Variant).Packet_Index) := Packet_Default;
+
+      return New_Packet;
+
+   end Get_Packet;
 
    procedure Send_Packet (This : in out Network_Type; Packet : Packet_Type) is
       Destination_Address : Drivers.Ethernet.Address_V4_Type := (127, 0, 0, 1);

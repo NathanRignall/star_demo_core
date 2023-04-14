@@ -128,9 +128,26 @@ package Library.Network is
         Payload_Length => Payload_Index_Default,
         Payload        => Payload_Array_Default, Broadcast => False);
 
-   type Packet_Index_Type is mod 2**8;
-   for Packet_Index_Type'Size use 8;
+   type Packet_Index_Type is mod 2**5;
    Packet_Index_Default : constant Packet_Index_Type := 0;
+
+   type Packet_Array_Type is array (Packet_Index_Type) of Packet_Type;
+   Packet_Array_Default : constant Packet_Array_Type :=
+     Packet_Array_Type'(others => Packet_Default);
+
+   type Packet_Collection_Type is record
+      Packet_Index : Packet_Index_Type;
+      Packet_Array : Packet_Array_Type;
+   end record;
+   Packet_Collection_Default : constant Packet_Collection_Type :=
+     Packet_Collection_Type'
+       (Packet_Index => Packet_Index_Default,
+        Packet_Array => Packet_Array_Default);
+
+   type Packet_Collection_Array_Type is
+     array (Packet_Variant_Type) of Packet_Collection_Type;
+   Packet_Collection_Array_Default : constant Packet_Collection_Array_Type :=
+     Packet_Collection_Array_Type'(others => Packet_Collection_Default);
 
    type Network_Type
      (Device_Identifier : Device_Identifier_Type;
@@ -148,10 +165,13 @@ package Library.Network is
 
    procedure Send_Packet (This : in out Network_Type; Packet : Packet_Type);
 
+   function Get_Packet
+     (This : in out Network_Type; Variant : Packet_Variant_Type)
+      return Packet_Type;
+
    function Get_Connected
      (This         : in out Network_Type; Transport : Transport_Type;
-      Device_Index :        Connected_Device_Index_Type)
-      return Connected_Device_Type;
+      Device_Index : Connected_Device_Index_Type) return Connected_Device_Type;
 
 private
 
@@ -168,6 +188,9 @@ private
         Connected_Device_Transport_Array_Default;
       Connected_Device_Timeout         : Ada.Real_Time.Time_Span :=
         Ada.Real_Time.Seconds (5);
+
+      Packet_Collection : Packet_Collection_Array_Type :=
+        Packet_Collection_Array_Default;
 
    end record;
 

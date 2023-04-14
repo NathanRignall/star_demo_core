@@ -8,7 +8,11 @@ maintainers-logins = ["NathanRignall"]
 
 executables = ["star_demo_core"]
 
+[build-switches]
+"*".style_checks = "No"
+"*".Ada_Version = "Ada2022"
+
 [environment]
 DEVICE_IDENTIFIER.set = "89"
-CLOUD_BROADCAST_ADDRESS.set = "010.000.001.255"
-RADIO_BROADCAST_ADDRESS.set = "172.000.001.255"
+RADIO_MULTICAST_ADDRESS.set = "239.255.128.127"
+CLOUD_MULTICAST_ADDRESS.set = "239.255.128.128"
