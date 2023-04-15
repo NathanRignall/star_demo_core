@@ -2,6 +2,7 @@ with Library.Network;
 
 with Types.Physics;
 with Types.Schedule;
+with Types.State;
 
 package Library.Telemetry is
 

@@ -23,4 +23,6 @@ package Application.State is
                Types.Physics.Angular_Acceleration_Vector_Type'
                  (0.0, 0.0, 0.0)));
 
+   Aircraft_State : Types.State.Aircraft_Array_Type := Types.State.Aircraft_Array_Default;
+
 end Application.State;

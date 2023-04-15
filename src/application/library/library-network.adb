@@ -157,13 +157,17 @@ package body Library.Network is
                  (This, Transport, Packet, Source_Address_Port);
 
             when Telemetry =>
-               Ada.Text_IO.Put_Line
-                 ("Telemetry" & Packet.Source'Image & " Packet:" &
-                  Packet.Packet_Number'Image & " Transport: " &
-                  Transport'Image);
+               --  Ada.Text_IO.Put_Line
+               --    ("Telemetry" & Packet.Source'Image & " Packet:" &
+               --     Packet.Packet_Number'Image & " Transport: " &
+               --     Transport'Image);
 
-               This.Packet_Collection(Telemetry).Packet_Index := Packet_Index_Type'Succ(This.Packet_Collection(Telemetry).Packet_Index);
-               This.Packet_Collection(Telemetry).Packet_Array (This.Packet_Collection(Telemetry).Packet_Index) := Packet;
+               This.Packet_Collection (Telemetry).Packet_Index     :=
+                 Packet_Index_Type'Succ
+                   (This.Packet_Collection (Telemetry).Packet_Index);
+               This.Packet_Collection (Telemetry).Packet_Array
+                 (This.Packet_Collection (Telemetry).Packet_Index) :=
+                 Packet;
 
             when Command =>
                Ada.Text_IO.Put_Line
@@ -171,8 +175,12 @@ package body Library.Network is
                   Packet.Packet_Number'Image & " Transport: " &
                   Transport'Image);
 
-               This.Packet_Collection(Command).Packet_Index := Packet_Index_Type'Succ(This.Packet_Collection(Command).Packet_Index);
-               This.Packet_Collection(Command).Packet_Array (This.Packet_Collection(Command).Packet_Index) := Packet;
+               This.Packet_Collection (Command).Packet_Index     :=
+                 Packet_Index_Type'Succ
+                   (This.Packet_Collection (Command).Packet_Index);
+               This.Packet_Collection (Command).Packet_Array
+                 (This.Packet_Collection (Command).Packet_Index) :=
+                 Packet;
 
             when Response =>
                Ada.Text_IO.Put_Line
@@ -180,8 +188,12 @@ package body Library.Network is
                   Packet.Packet_Number'Image & " Transport: " &
                   Transport'Image);
 
-               This.Packet_Collection(Response).Packet_Index := Packet_Index_Type'Succ(This.Packet_Collection(Response).Packet_Index);
-               This.Packet_Collection(Response).Packet_Array (This.Packet_Collection(Response).Packet_Index) := Packet;
+               This.Packet_Collection (Response).Packet_Index     :=
+                 Packet_Index_Type'Succ
+                   (This.Packet_Collection (Response).Packet_Index);
+               This.Packet_Collection (Response).Packet_Array
+                 (This.Packet_Collection (Response).Packet_Index) :=
+                 Packet;
 
             when Unknown =>
                Ada.Text_IO.Put_Line
@@ -342,14 +354,20 @@ package body Library.Network is
 
    end Process_Alive_Packet;
 
-   function Get_Packet (This : in out Network_Type; Variant : Packet_Variant_Type) return Packet_Type
+   function Get_Packet
+     (This : in out Network_Type; Variant : Packet_Variant_Type)
+      return Packet_Type
    is
       New_Packet : Packet_Type := Packet_Default;
    begin
 
-      New_Packet := This.Packet_Collection(Variant).Packet_Array (This.Packet_Collection(Variant).Packet_Index);
+      New_Packet :=
+        This.Packet_Collection (Variant).Packet_Array
+          (This.Packet_Collection (Variant).Packet_Index);
 
-      This.Packet_Collection(Variant).Packet_Array (This.Packet_Collection(Variant).Packet_Index) := Packet_Default;
+      This.Packet_Collection (Variant).Packet_Array
+        (This.Packet_Collection (Variant).Packet_Index) :=
+        Packet_Default;
 
       return New_Packet;
 
@@ -389,11 +407,11 @@ package body Library.Network is
 
          else
 
-            Ada.Text_IO.Put_Line ("Unknown Target");
+            --  Ada.Text_IO.Put_Line ("Unknown Target");
 
             -- send the packet to cloud server
             This.Cloud.Send
-            (Address => Drivers.Ethernet.Address_V4_Type'(192, 168, 65, 2),
+              (Address => Drivers.Ethernet.Address_V4_Type'(172,20,0,2),
                Port    => This.Cloud.Port, Data => New_Data, Last => Last);
 
          end if;
@@ -407,7 +425,7 @@ package body Library.Network is
 
          -- send the packet to cloud server
          This.Cloud.Send
-           (Address => Drivers.Ethernet.Address_V4_Type'(192, 168, 65, 2),
+           (Address => Drivers.Ethernet.Address_V4_Type'(172,20,0,2),
             Port    => This.Cloud.Port, Data => New_Data, Last => Last);
 
       end if;
