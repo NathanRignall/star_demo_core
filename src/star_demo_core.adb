@@ -16,12 +16,15 @@ procedure Star_Demo_Core is
    procedure Dispatch_Schedule (Cycle : Types.Schedule.Cycle_Type) is
    begin
 
+      -- dispatch schedule to hardware and application
       Hardware.Schedule (Cycle);
       Application.Schedule (Cycle);
 
    end Dispatch_Schedule;
 
+   -- main schedule task
    task body Schedule is
+
       Cycle_Delay : constant Ada.Real_Time.Time_Span :=
         Ada.Real_Time.Milliseconds (20);
 
@@ -36,10 +39,12 @@ procedure Star_Demo_Core is
 
       Ada.Text_IO.Put_Line ("Starting Schedule");
 
+      -- initialize hardware and application
       Hardware.Initialize;
       Application.Initialize;
 
       loop
+         -- wait for next cycle
          delay until Next;
 
          -- run 20ms cycle
@@ -90,6 +95,7 @@ procedure Star_Demo_Core is
          -- update next time
          Next := Next + Cycle_Delay;
 
+         -- check if schedule is running late
          if Next < Ada.Real_Time.Clock then
             Ada.Text_IO.Put_Line ("Schedule overrun in cycle counter " & Cycle'Image);
          end if;
@@ -98,6 +104,7 @@ procedure Star_Demo_Core is
 
    exception
 
+      -- handle exceptions and print message for debugging
       when Exep : others =>
          Ada.Text_IO.Put_Line ("Exception");
          Ada.Text_IO.Put_Line (Ada.Exceptions.Exception_Message(Exep));

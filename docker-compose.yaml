@@ -9,7 +9,7 @@ services:
     environment:
       - DEVICE_IDENTIFIER=11
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
-      - CLOUD_MULTICAST_ADDRESS=239.255.128.128
+      - CLOUD_SERVER_ADDRESS=172.020.000.002
     networks:
       - system
   drone2:
@@ -20,7 +20,7 @@ services:
     environment:
       - DEVICE_IDENTIFIER=12
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
-      - CLOUD_MULTICAST_ADDRESS=239.255.128.128
+      - CLOUD_SERVER_ADDRESS=172.020.000.002
     networks:
       - system
   drone3:
@@ -31,7 +31,7 @@ services:
     environment:
       - DEVICE_IDENTIFIER=13
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
-      - CLOUD_MULTICAST_ADDRESS=239.255.128.128
+      - CLOUD_SERVER_ADDRESS=172.020.000.002
     networks:
       - system
   drone4:
@@ -42,7 +42,7 @@ services:
     environment:
       - DEVICE_IDENTIFIER=14
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
-      - CLOUD_MULTICAST_ADDRESS=239.255.128.128
+      - CLOUD_SERVER_ADDRESS=172.020.000.002
     networks:
       - system
   drone5:
@@ -53,7 +53,7 @@ services:
     environment:
       - DEVICE_IDENTIFIER=15
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
-      - CLOUD_MULTICAST_ADDRESS=239.255.128.128
+      - CLOUD_SERVER_ADDRESS=172.020.000.002
     networks:
       - system
   drone6:
@@ -64,7 +64,7 @@ services:
     environment:
       - DEVICE_IDENTIFIER=16
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
-      - CLOUD_MULTICAST_ADDRESS=239.255.128.128
+      - CLOUD_SERVER_ADDRESS=172.020.000.002
     networks:
       - system
   drone7:
@@ -75,7 +75,7 @@ services:
     environment:
       - DEVICE_IDENTIFIER=17
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
-      - CLOUD_MULTICAST_ADDRESS=239.255.128.128
+      - CLOUD_SERVER_ADDRESS=172.020.000.002
     networks:
       - system
   drone8:
@@ -86,7 +86,7 @@ services:
     environment:
       - DEVICE_IDENTIFIER=18
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
-      - CLOUD_MULTICAST_ADDRESS=239.255.128.128
+      - CLOUD_SERVER_ADDRESS=172.020.000.002
     networks:
       - system
   drone9:
@@ -97,18 +97,7 @@ services:
     environment:
       - DEVICE_IDENTIFIER=19
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
-      - CLOUD_MULTICAST_ADDRESS=239.255.128.128
-    networks:
-      - system
-  drone10:
-    image: stardemocore:dev
-    build:
-      context: ./
-      dockerfile: ./Dockerfile
-    environment:
-      - DEVICE_IDENTIFIER=20
-      - RADIO_MULTICAST_ADDRESS=239.255.128.127
-      - CLOUD_MULTICAST_ADDRESS=239.255.128.128
+      - CLOUD_SERVER_ADDRESS=172.020.000.002
     networks:
       - system
 
