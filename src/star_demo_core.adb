@@ -95,10 +95,10 @@ procedure Star_Demo_Core is
          -- update next time
          Next := Next + Cycle_Delay;
 
-         -- check if schedule is running late
-         if Next < Ada.Real_Time.Clock then
-            Ada.Text_IO.Put_Line ("Schedule overrun in cycle counter " & Cycle'Image);
-         end if;
+         --  -- check if schedule is running late
+         --  if Next < Ada.Real_Time.Clock then
+         --     Ada.Text_IO.Put_Line ("Schedule overrun in cycle counter " & Cycle'Image);
+         --  end if;
 
       end loop;
 
