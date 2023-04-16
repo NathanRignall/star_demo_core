@@ -2,9 +2,12 @@ with Ada.Environment_Variables;
 
 with Application.Control;
 with Application.Estimation;
+with Application.State;
 
 with Hardware;
 with Drivers.Ethernet;
+
+with types.Physics;
 
 package body Application is
 
@@ -19,6 +22,18 @@ package body Application is
 
       Cloud_Server_Address_Env : constant String :=
         Ada.Environment_Variables.Value ("CLOUD_SERVER_ADDRESS");
+
+      Latitude_Env : constant String :=
+        Ada.Environment_Variables.Value ("INITIAL_LATITUDE");
+
+      Longitude_Env : constant String :=
+        Ada.Environment_Variables.Value ("INITIAL_LONGITUDE");
+
+      Velocity_X_Env : constant String :=
+        Ada.Environment_Variables.Value ("INITIAL_VELOCITY_X");
+
+      Velocity_Y_Env : constant String :=
+        Ada.Environment_Variables.Value ("INITIAL_VELOCITY_Y");
 
       -- create the device identifier
       Device_Identifier : constant Library.Network.Device_Identifier_Type :=
@@ -56,6 +71,19 @@ package body Application is
                 (Cloud_Server_Address_Env (13 .. 15))));
 
    begin
+
+      -- load the initial values on the state
+      Application.State.Core_State.Physical_State.Position.Latitude :=
+        Types.Physics.Latitude_Type'Value (Latitude_Env);
+      
+      Application.State.Core_State.Physical_State.Position.Longitude :=
+         Types.Physics.Longitude_Type'Value (Longitude_Env);
+
+      Application.State.Core_State.Physical_State.Velocity_Vector(Types.Physics.X) :=
+         Types.Physics.Velocity_Type'Value (Velocity_X_Env);
+
+      Application.State.Core_State.Physical_State.Velocity_Vector(Types.Physics.Y) :=
+         Types.Physics.Velocity_Type'Value (Velocity_Y_Env);
 
       -- initialize demo applications
       Application.Estimation.Initialize;

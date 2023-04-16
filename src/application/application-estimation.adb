@@ -1,4 +1,3 @@
-with Ada.Environment_Variables;
 with Ada.Text_IO;
 
 with Application.State;
@@ -10,36 +9,9 @@ package body Application.Estimation is
    procedure Estimate_State;
 
    procedure Initialize is
-
-      -- load the environment variables
-      Latitude_Env : constant String :=
-        Ada.Environment_Variables.Value ("INITIAL_LATITUDE");
-
-      Longitude_Env : constant String :=
-        Ada.Environment_Variables.Value ("INITIAL_LONGITUDE");
-
-      Velocity_X_Env : constant String :=
-        Ada.Environment_Variables.Value ("INITIAL_VELOCITY_X");
-
-      Velocity_Y_Env : constant String :=
-        Ada.Environment_Variables.Value ("INITIAL_VELOCITY_Y");
-
    begin
 
       Ada.Text_IO.Put_Line ("Estimation Initialize");
-
-      -- load the initial values on the state
-      Application.State.Core_State.Physical_State.Position.Latitude :=
-        Types.Physics.Latitude_Type'Value (Latitude_Env);
-      
-      Application.State.Core_State.Physical_State.Position.Longitude :=
-         Types.Physics.Longitude_Type'Value (Longitude_Env);
-
-      Application.State.Core_State.Physical_State.Velocity_Vector(Types.Physics.X) :=
-         Types.Physics.Velocity_Type'Value (Velocity_X_Env);
-
-      Application.State.Core_State.Physical_State.Velocity_Vector(Types.Physics.Y) :=
-         Types.Physics.Velocity_Type'Value (Velocity_Y_Env);
 
    end Initialize;
 
