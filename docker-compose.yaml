@@ -10,6 +10,10 @@ services:
       - DEVICE_IDENTIFIER=11
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
       - CLOUD_SERVER_ADDRESS=172.020.000.002
+      - INITIAL_LATITUDE=52.0
+      - INITIAL_LONGITUDE=0.0
+      - INITIAL_VELOCITY_X=400
+      - INITIAL_VELOCITY_Y=0
     networks:
       - system
   drone2:
@@ -21,6 +25,10 @@ services:
       - DEVICE_IDENTIFIER=12
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
       - CLOUD_SERVER_ADDRESS=172.020.000.002
+      - INITIAL_LATITUDE=52.0
+      - INITIAL_LONGITUDE=0.1
+      - INITIAL_VELOCITY_X=0
+      - INITIAL_VELOCITY_Y=300
     networks:
       - system
   drone3:
@@ -32,6 +40,10 @@ services:
       - DEVICE_IDENTIFIER=13
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
       - CLOUD_SERVER_ADDRESS=172.020.000.002
+      - INITIAL_LATITUDE=52.0
+      - INITIAL_LONGITUDE=-0.1
+      - INITIAL_VELOCITY_X=0
+      - INITIAL_VELOCITY_Y=-300
     networks:
       - system
   drone4:
@@ -43,6 +55,10 @@ services:
       - DEVICE_IDENTIFIER=14
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
       - CLOUD_SERVER_ADDRESS=172.020.000.002
+      - INITIAL_LATITUDE=51.98
+      - INITIAL_LONGITUDE=-1.36
+      - INITIAL_VELOCITY_X=300
+      - INITIAL_VELOCITY_Y=0
     networks:
       - system
   drone5:
@@ -54,6 +70,10 @@ services:
       - DEVICE_IDENTIFIER=15
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
       - CLOUD_SERVER_ADDRESS=172.020.000.002
+      - INITIAL_LATITUDE=51.99
+      - INITIAL_LONGITUDE=-1.38
+      - INITIAL_VELOCITY_X=300
+      - INITIAL_VELOCITY_Y=0
     networks:
       - system
   drone6:
@@ -65,6 +85,10 @@ services:
       - DEVICE_IDENTIFIER=16
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
       - CLOUD_SERVER_ADDRESS=172.020.000.002
+      - INITIAL_LATITUDE=52.0
+      - INITIAL_LONGITUDE=-1.4
+      - INITIAL_VELOCITY_X=300
+      - INITIAL_VELOCITY_Y=0
     networks:
       - system
   drone7:
@@ -76,6 +100,10 @@ services:
       - DEVICE_IDENTIFIER=17
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
       - CLOUD_SERVER_ADDRESS=172.020.000.002
+      - INITIAL_LATITUDE=51.985
+      - INITIAL_LONGITUDE=-1.4
+      - INITIAL_VELOCITY_X=300
+      - INITIAL_VELOCITY_Y=0
     networks:
       - system
   drone8:
@@ -87,6 +115,10 @@ services:
       - DEVICE_IDENTIFIER=18
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
       - CLOUD_SERVER_ADDRESS=172.020.000.002
+      - INITIAL_LATITUDE=51.99
+      - INITIAL_LONGITUDE=-1.42
+      - INITIAL_VELOCITY_X=300
+      - INITIAL_VELOCITY_Y=0
     networks:
       - system
   drone9:
@@ -98,25 +130,12 @@ services:
       - DEVICE_IDENTIFIER=19
       - RADIO_MULTICAST_ADDRESS=239.255.128.127
       - CLOUD_SERVER_ADDRESS=172.020.000.002
+      - INITIAL_LATITUDE=51.98
+      - INITIAL_LONGITUDE=-1.44
+      - INITIAL_VELOCITY_X=300
+      - INITIAL_VELOCITY_Y=0
     networks:
       - system
-
-  # wireshark:
-  #   image: lscr.io/linuxserver/wireshark:latest
-  #   container_name: wireshark
-  #   cap_add:
-  #     - NET_ADMIN
-  #   security_opt:
-  #     - seccomp:unconfined
-  #   networks:
-  #     - system
-  #   environment:
-  #     - PUID=1000
-  #     - PGID=1000
-  #     - TZ=Etc/UTC
-  #   ports:
-  #     - 3000:3000
-  #   restart: unless-stopped
 
 networks:
   system:
